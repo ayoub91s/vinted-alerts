@@ -195,7 +195,7 @@ def acheter_article(item_id, tentative=1):
                 return acheter_article(item_id, tentative=2)
             return False, "Token expiré"
         if response.status_code not in [200, 201]:
-            return False, f"Échec étape 1 (status {response.status_code})"
+            return False, f"Échec étape 1 (status {response.status_code}) : {response.text[:300]}"
         data = response.json()
         checkout = data.get("checkout", {})
         purchase_id = checkout.get("id")
