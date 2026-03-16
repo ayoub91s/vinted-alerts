@@ -58,6 +58,12 @@ def init_db():
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS articles_vus (
         vinted_id TEXT,
+        photo_url TEXT,
+        prix TEXT,
+        photo_url TEXT,
+        prix TEXT,
+        photo_url TEXT,
+        prix TEXT,
         nom_alerte TEXT,
         titre TEXT,
         trouve_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -83,7 +89,7 @@ def marquer_article_vu(vinted_id, nom_alerte, titre):
     try:
         conn = get_conn()
         c = conn.cursor()
-        c.execute('INSERT INTO articles_vus (vinted_id, nom_alerte, titre) VALUES (%s, %s, %s) ON CONFLICT DO NOTHING', (str(vinted_id), nom_alerte, titre))
+        c.execute('INSERT INTO articles_vus (vinted_id, nom_alerte, titre, photo_url, prix) VALUES (%s, %s, %s) ON CONFLICT DO NOTHING', (str(vinted_id), nom_alerte, titre, '', ''))
         conn.commit()
         conn.close()
     except Exception as e:

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vinted Alerts</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,BlinkMacSystemFont,sans-serif; background:#f0f0f5; min-height:100vh; padding:1.5rem; }
+.container { max-width:1100px; margin:0 auto; }
+h1 { font-size:28px; font-weight:700; color:#333; margin-bottom:.25rem; }
+.subtitle { color:#888; font-size:14px; margin-bottom:2rem; }
+.stats { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:2rem; }
+.stat { background:white; border-radius:12px; padding:1.25rem; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+.stat-n { font-size:28px; font-weight:700; color:#6c5ce7; }
+.stat-l { font-size:12px; color:#999; margin-top:.25rem; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:2rem; }
+@media(max-width:800px){.grid,.stats{grid-template-columns:1fr;}}
+.card { background:white; border-radius:12px; padding:1.5rem; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+.card h2 { font-size:17px; font-weight:600; margin-bottom:1.25rem; color:#333; }
+label { display:block; font-size:13px; font-weight:500; color:#555; margin-bottom:.4rem; }
+input,select { width:100%; padding:.65rem .85rem; font-size:14px; border:1.5px solid #e0e0e0; border-radius:8px; margin-bottom:1rem; }
+input:focus,select:focus { outline:none; border-color:#6c5ce7; }
+.row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.btn { width:100%; padding:.75rem; font-size:14px; font-weight:600; background:linear-gradient(135deg,#6c5ce7,#a29bfe); color:white; border:none; border-radius:8px; cursor:pointer; }
+.btn:hover { opacity:.9; }
+.alert-item { background:#f9f9f9; border:1.5px solid #eee; border-radius:8px; padding:1rem; margin-bottom:.75rem; display:flex; justify-content:space-between; align-items:start; }
+.alert-item:hover { border-color:#6c5ce7; }
+.alert-title { font-size:14px; font-weight:600; }
+.alert-meta { font-size:12px; color:#888; margin-top:.3rem; line-height:1.6; }
+.btn-del { background:#ff7675; color:white; border:none; border-radius:6px; padding:.4rem .8rem; font-size:12px; cursor:pointer; }
+.items-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:1.25rem; }
+.item-card { background:white; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.08); transition:transform .2s; }
+.item-card:hover { transform:translateY(-4px); }
+.item-img { width:100%; height:170px; background:#f0eeff; display:flex; align-items:center; justify-content:center; color:#ccc; font-size:13px; overflow:hidden; }
+.item-img img { width:100%; height:100%; object-fit:cover; }
+.item-body { padding:.9rem; }
+.item-title { font-size:13px; font-weight:600; margin-bottom:.4rem; line-height:1.4; }
+.item-meta { font-size:11px; color:#999; line-height:1.7; }
+.item-price { font-size:17px; font-weight:700; color:#6c5ce7; margin:.6rem 0; }
+.item-btn { display:block; text-align:center; background:#6c5ce7; color:white; text-decoration:none; border-radius:6px; padding:.4rem; font-size:12px; font-weight:600; }
+.empty { color:#bbb; font-size:14px; text-align:center; padding:2rem; }
+.notif { position:fixed; bottom:1.5rem; right:1.5rem; background:#6c5ce7; color:white; padding:1rem 1.5rem; border-radius:10px; font-size:14px; font-weight:500; box-shadow:0 4px 20px rgba(108,92,231,.4); animation:pop .3s ease; z-index:999; }
+@keyframes pop { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+.dot-live { display:inline-block; width:8px; height:8px; background:#00b894; border-radius:50%; margin-right:6px; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🎯 Vinted Alerts</h1>
+  <p class="subtitle"><span class="dot-live"></span>Notifications en temps réel · scrape toutes les 5 minutes</p>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="s-alerts">0</div><div class="stat-l">Alertes actives</div></div>
+    <div class="stat"><div class="stat-n" id="s-items">0</div><div class="stat-l">Articles trouvés</div></div>
+    <div class="stat"><div class="stat-n" id="s-time">--:--</div><div class="stat-l">Dernier check</div></div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>➕ Nouvelle alerte</h2>
+      <form id="form">
+        <label>Nom de l'alerte</label>
+        <input id="f-name" placeholder="Ex : Rick Owens pas cher" required>
+        <label>Marque (obligatoire)</label>
+        <input id="f-brand" placeholder="Ex : Rick Owens" required>
+        <div class="row">
+          <div><label>Prix min (€)</label><input id="f-min" type="number" placeholder="0" min="0"></div>
+          <div><label>Prix max (€)</label><input id="f-max" type="number" placeholder="999" min="0"></div>
+        </div>
+        <div class="row">
+          <div><label>Taille</label>
+            <select id="f-size">
+              <option value="">Indifférent</option>
+              <option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option>
+            </select>
+          </div>
+          <div><label>État</label>
+            <select id="f-cond">
+              <option value="">Indifférent</option>
+              <option value="neuf">Neuf avec étiquette</option>
+              <option value="excellent">Très bon état</option>
+              <option value="bon">Bon état</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn" type="submit">Créer l'alerte</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>📋 Mes alertes</h2>
+      <div id="alerts-list"><div class="empty">Aucune alerte</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-bottom:1.25rem">🔍 Articles trouvés</h2>
+    <div id="items-grid" class="items-grid">
+      <div class="empty" style="grid-column:1/-1">Les articles apparaîtront ici dès qu'ils seront trouvés</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+const socket = io();
+socket.on('connect', () => console.log('Connecte'));
+socket.on('new_item', d => {
+  notify('🎉 ' + d.title + ' — ' + d.price + '€');
+  if (Notification.permission === 'granted')
+    new Notification('Vinted Alert', { body: d.title + ' — ' + d.price + '€' });
+  loadItems(); loadStats();
+});
+socket.on('alert_created', () => { loadAlerts(); loadStats(); });
+socket.on('alert_deleted', () => { loadAlerts(); loadStats(); });
+
+async function loadAlerts() {
+  const r = await fetch('/api/alerts');
+  const data = await r.json();
+  const el = document.getElementById('alerts-list');
+  if (!data.length) { el.innerHTML = '<div class="empty">Aucune alerte</div>'; return; }
+  el.innerHTML = data.map(a => `
+    <div class="alert-item">
+      <div>
+        <div class="alert-title">${a.name}</div>
+        <div class="alert-meta">
+          🏷️ ${a.brand}<br>
+          ${a.min_price || a.max_price ? '💰 ' + (a.min_price||0) + '€ → ' + (a.max_price||'∞') + '€<br>' : ''}
+          ${a.size ? '📏 ' + a.size : ''} ${a.condition ? '✨ ' + a.condition : ''}
+        </div>
+      </div>
+      <button class="btn-del" onclick="delAlert(${a.id})">Supprimer</button>
+    </div>`).join('');
+}
+
+async function loadItems() {
+  const r = await fetch('/api/items');
+  const data = await r.json();
+  const el = document.getElementById('items-grid');
+  if (!data.length) { el.innerHTML = '<div class="empty" style="grid-column:1/-1">Les articles apparaîtront ici dès qu\'ils seront trouvés</div>'; return; }
+  el.innerHTML = data.map(i => `
+    <div class="item-card">
+      <div class="item-img">${i.image_url ? '<img src="' + i.image_url + '" alt="">' : 'Pas d\'image'}</div>
+      <div class="item-body">
+        <div class="item-title">${i.title}</div>
+        <div class="item-meta">${i.brand ? '🏷️ ' + i.brand + '<br>' : ''}${i.size ? '📏 ' + i.size + '<br>' : ''}${i.condition ? '✨ ' + i.condition : ''}</div>
+        <div class="item-price">${i.price}€</div>
+        <a class="item-btn" href="${i.item_url}" target="_blank">Voir sur Vinted →</a>
+      </div>
+    </div>`).join('');
+}
+
+async function loadStats() {
+  const r = await fetch('/api/stats');
+  const d = await r.json();
+  document.getElementById('s-alerts').textContent = d.total_alerts;
+  document.getElementById('s-items').textContent = d.total_items;
+  document.getElementById('s-time').textContent = new Date().toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
+}
+
+async function delAlert(id) {
+  if (!confirm('Supprimer cette alerte ?')) return;
+  await fetch('/api/alerts/' + id, { method: 'DELETE' });
+}
+
+document.getElementById('form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const body = {
+    name: document.getElementById('f-name').value,
+    brand: document.getElementById('f-brand').value,
+    min_price: document.getElementById('f-min').value || null,
+    max_price: document.getElementById('f-max').value || null,
+    size: document.getElementById('f-size').value,
+    condition: document.getElementById('f-cond').value
+  };
+  const r = await fetch('/api/alerts', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  const d = await r.json();
+  if (r.ok) { notify('✓ Alerte créée !'); e.target.reset(); }
+  else notify('❌ ' + d.error);
+});
+
+function notify(msg) {
+  const n = document.createElement('div');
+  n.className = 'notif'; n.textContent = msg;
+  document.body.appendChild(n);
+  setTimeout(() => n.remove(), 3500);
+}
+
+if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+loadAlerts(); loadItems(); loadStats();
+setInterval(loadStats, 30000);
+</script>
+</body>
+</html>
