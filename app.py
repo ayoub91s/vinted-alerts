@@ -89,7 +89,7 @@ def marquer_article_vu(vinted_id, nom_alerte, titre):
     try:
         conn = get_conn()
         c = conn.cursor()
-        c.execute('INSERT INTO articles_vus (vinted_id, nom_alerte, titre, photo_url, prix) VALUES (%s, %s, %s) ON CONFLICT DO NOTHING', (str(vinted_id), nom_alerte, titre, '', ''))
+        c.execute('INSERT INTO articles_vus (vinted_id, nom_alerte, titre, photo_url, prix) VALUES (%s, %s, %s) ON CONFLICT DO NOTHING', (str(vinted_id), nom_alerte, titre))
         conn.commit()
         conn.close()
     except Exception as e:
