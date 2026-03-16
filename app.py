@@ -1,58 +1,22 @@
 import requests
-import sqlite3
 import time
 import logging
 import os
 import json
+import psycopg2
 from datetime import datetime
-
-# ============================================
-# TES INFORMATIONS TELEGRAM
-# ============================================
 
 TELEGRAM_TOKEN = "8142414797:AAHW8tNIsrncPLNsruNO0aZUbspto7Nj2Ys"
 TELEGRAM_CHAT_ID = "5741568179"
-
 INTERVAL_SECONDES = 3
-
-# ============================================
-# TES ALERTES
-# ============================================
+DATABASE_URL = "postgresql://postgres:UaFzBdpZoZxqfFvKNEECjYQssAaWXiKA@postgres.railway.internal:5432/railway"
 
 ALERTES = [
-    {
-        "nom": "Rick Owens",
-        "brand_id": 145654,
-        "prix_min": None,
-        "prix_max": None,
-    },
-    {
-        "nom": "Ann Demeulemeester",
-        "brand_id": 51445,
-        "prix_min": None,
-        "prix_max": None,
-    },
-    {
-        "nom": "Isaac Sellam",
-        "brand_id": 393343,
-        "prix_min": None,
-        "prix_max": None,
-    },
-    {
-        "nom": "Mon profil",
-        "user_id": 0,
-        "prix_min": None,
-        "prix_max": None,
-    }
+    {"nom": "Rick Owens", "brand_id": 145654, "prix_min": None, "prix_max": None},
+    {"nom": "Ann Demeulemeester", "brand_id": 51445, "prix_min": None, "prix_max": None},
+    {"nom": "Isaac Sellam", "brand_id": 393343, "prix_min": None, "prix_max": None},
+    {"nom": "Mon profil", "user_id": 0, "prix_min": None, "prix_max": None},
 ]
-
-# ============================================
-# TES TOKENS VINTED
-# ============================================
-
-# Ces tokens se renouvellent automatiquement.
-# Si l'achat automatique arrête de fonctionner complètement,
-# remplace ces valeurs par de nouveaux tokens depuis les DevTools.
 
 VINTED_TOKENS = {
     "refresh_token": "eyJraWQiOiJFNTdZZHJ1SHBsQWp1MmNObzFEb3JIM2oyN0J1NS1zX09QNVB3UGlobjVNIiwiYWxnIjoiUFMyNTYifQ.eyJhY2NvdW50X2lkIjozNzA2Mzc3OSwiYXBwX2lkIjo0LCJhdWQiOiJmci5jb3JlLmFwaSIsImNsaWVudF9pZCI6IndlYiIsImV4cCI6MTc3NDI2ODQxNiwiaWF0IjoxNzczNjYzNjE2LCJpc3MiOiJ2aW50ZWQtaWFtLXNlcnZpY2UiLCJsb2dpbl90eXBlIjozLCJwdXJwb3NlIjoicmVmcmVzaCIsInNjb3BlIjoidXNlciIsInNpZCI6IjM5NWMyNjNiLTE3NzE1OTY0MTAiLCJzdWIiOiI1NTM5MjQ4NiIsImNjIjoiRlIiLCJhbmlkIjoiYWIyM2VkZGMtMmJiNi00NGM2LWE1MjEtMmU2YzBmMzVhZTBiIiwiYWN0Ijp7InN1YiI6IjU1MzkyNDg2In19.cbKAZoXl9YpnwhbJ6PcwDt2xRz1DtSMTjuDL6zu2sy2UlAmwgG_3pJZkIs0uUqRI_wW-IkldatgeueGbulcmPjwH21GFWPrkGs_BnC7oDpE60tB0h4bKkhiyQ9aBnIP6D50Smi33O4_KrNvsNhBUPmWYSFfqHuFPKtTFKp103YwK8NXhapJnnbTVkhoqAo97PPpqgYjSd4Csb-7U0uIXWKA94IrS4KnYmYYvsH2gQElJsSoHsTR4Cpkf6DwzTroeqTHclICNHy3-11GZxK_mfbnDwId8EDix7OINjnjq8ygkLb51u0-TUDHF82fqLBpYwH3kThBijN_11gqiTqpDhQ",
@@ -60,83 +24,20 @@ VINTED_TOKENS = {
     "session": "M1g0Sk50Wit3Wi8xVXhyODlZTll2WkNTL2srRVp5K2FHSXZVazJxc2xyRFhiaktFeU41d2pyRGwyempieENCOGQwM0w1V0Y2Vk1lY0w4VW04eEJMZWhnS1dKcTFGSTBuMXFidjVFdzZVZEhOclR2NzNFZ3VaWjNzWTFmbnc2aG56Q28vNkVuU0JYaU92elkwOVQvYkZHbmxIZWpmK3hROU5tb0t5RlNZRzJTaWFrRjBPakhSdUJ2Mno1aFBIVW9XZWE1aGNLekJudndqNXpNYy93blJXZEVlVHZ5MS9yWmFkbEdQM3hkVzN2WURpdkkyWjd3aGlDOUpzbzJ2Nzd5NGMyUDNVVlR5ZHNqRFVZelVPZXFWRVRuV2Z6L2Ryc05wWGdCaHNyUnY2Z3ZKQUMySm5iT2R2Z0c0RTh3MHkxOCstLXg0bW1UM08wSWFUa01TU0RYYVZMSnc9PQ%3D%3D--4cd865d4e44c75e28fe1cf52272ab02cc27c7be4",
 }
 
-# ============================================
-# POINTS RELAIS PAR ORDRE DE PRIORITÉ
-# ============================================
-
 POINTS_RELAIS = [
-    {
-        "nom": "Locker Rain X Wash Bondoufle",
-        "uuid": "7d5b16ac-cc4c-4398-b07e-fbf8ac74c725",
-        "rate_uuid": "abe64f67-389f-4c2b-b270-39c733127c64",
-        "carrier": "MONDIAL",
-    },
-    {
-        "nom": "Rain x Wash",
-        "uuid": "56ce4063-e960-4f68-adcc-4c2d5610603e",
-        "rate_uuid": "99c3aec2-87a6-4435-b14b-68c376560184",
-        "carrier": "VINTEDGO-SHOP-FR",
-    },
-    {
-        "nom": "Wash N Dry",
-        "uuid": "7fe02049-a4e6-47de-97bc-2131c78a112e",
-        "rate_uuid": "99c3aec2-87a6-4435-b14b-68c376560184",
-        "carrier": "VINTEDGO-SHOP-FR",
-    },
-    {
-        "nom": "TLT Rapid Market (DPD)",
-        "uuid": "36455f4f-130a-45ed-bc43-f8f927aee30b",
-        "rate_uuid": "c16d2578-dd8c-4328-9b0c-55f0e8cfb084",
-        "carrier": "DPD-BE",
-    },
-    {
-        "nom": "TLT Rapid Market (Chronopost)",
-        "uuid": "491d0cc8-1c3e-4117-9833-1be724e5a2b2",
-        "rate_uuid": "c50f3c3e-90c1-4420-b46f-5b35f85c293b",
-        "carrier": "BRT-SHOP-IT",
-    },
-    {
-        "nom": "SL Informatique",
-        "uuid": "fd42da4b-fcc6-48d1-bfc7-c7a1b08e32fa",
-        "rate_uuid": "c50f3c3e-90c1-4420-b46f-5b35f85c293b",
-        "carrier": "BRT-SHOP-IT",
-    },
-    {
-        "nom": "Chronodrive",
-        "uuid": "3df26c07-3112-4c1c-b143-b08a7685587e",
-        "rate_uuid": "99c3aec2-87a6-4435-b14b-68c376560184",
-        "carrier": "VINTEDGO-SHOP-FR",
-    },
-    {
-        "nom": "Tabac Le Pepere",
-        "uuid": "196024f1-1bdb-4a2a-8f86-4b1695da1cc1",
-        "rate_uuid": "99c3aec2-87a6-4435-b14b-68c376560184",
-        "carrier": "VINTEDGO-SHOP-FR",
-    },
-    {
-        "nom": "Monoprix",
-        "uuid": "2fd1ea7e-9a1b-476c-8a9b-5db8fce4c77f",
-        "rate_uuid": "99c3aec2-87a6-4435-b14b-68c376560184",
-        "carrier": "VINTEDGO-SHOP-FR",
-    },
+    {"nom": "Locker Rain X Wash Bondoufle", "uuid": "7d5b16ac-cc4c-4398-b07e-fbf8ac74c725", "rate_uuid": "abe64f67-389f-4c2b-b270-39c733127c64", "carrier": "MONDIAL"},
+    {"nom": "Rain x Wash", "uuid": "56ce4063-e960-4f68-adcc-4c2d5610603e", "rate_uuid": "99c3aec2-87a6-4435-b14b-68c376560184", "carrier": "VINTEDGO-SHOP-FR"},
+    {"nom": "Wash N Dry", "uuid": "7fe02049-a4e6-47de-97bc-2131c78a112e", "rate_uuid": "99c3aec2-87a6-4435-b14b-68c376560184", "carrier": "VINTEDGO-SHOP-FR"},
+    {"nom": "TLT Rapid Market (DPD)", "uuid": "36455f4f-130a-45ed-bc43-f8f927aee30b", "rate_uuid": "c16d2578-dd8c-4328-9b0c-55f0e8cfb084", "carrier": "DPD-BE"},
+    {"nom": "TLT Rapid Market (Chronopost)", "uuid": "491d0cc8-1c3e-4117-9833-1be724e5a2b2", "rate_uuid": "c50f3c3e-90c1-4420-b46f-5b35f85c293b", "carrier": "BRT-SHOP-IT"},
+    {"nom": "SL Informatique", "uuid": "fd42da4b-fcc6-48d1-bfc7-c7a1b08e32fa", "rate_uuid": "c50f3c3e-90c1-4420-b46f-5b35f85c293b", "carrier": "BRT-SHOP-IT"},
+    {"nom": "Chronodrive", "uuid": "3df26c07-3112-4c1c-b143-b08a7685587e", "rate_uuid": "99c3aec2-87a6-4435-b14b-68c376560184", "carrier": "VINTEDGO-SHOP-FR"},
+    {"nom": "Tabac Le Pepere", "uuid": "196024f1-1bdb-4a2a-8f86-4b1695da1cc1", "rate_uuid": "99c3aec2-87a6-4435-b14b-68c376560184", "carrier": "VINTEDGO-SHOP-FR"},
+    {"nom": "Monoprix", "uuid": "2fd1ea7e-9a1b-476c-8a9b-5db8fce4c77f", "rate_uuid": "99c3aec2-87a6-4435-b14b-68c376560184", "carrier": "VINTEDGO-SHOP-FR"},
 ]
 
-# ============================================
-# LOGS
-# ============================================
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(message)s'
-)
-
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 logger = logging.getLogger(__name__)
-
-DB_PATH = 'vinted_alerts.db'
-
-# ============================================
-# HEADERS NAVIGATEUR
-# ============================================
 
 CHROME_HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
@@ -147,11 +48,14 @@ CHROME_HEADERS = {
 }
 
 # ============================================
-# BASE DE DONNÉES
+# BASE DE DONNÉES POSTGRESQL
 # ============================================
 
+def get_conn():
+    return psycopg2.connect(DATABASE_URL)
+
 def init_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_conn()
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS articles_vus (
         vinted_id TEXT,
@@ -162,130 +66,78 @@ def init_db():
     )''')
     conn.commit()
     conn.close()
-
-
-def reset_db():
-    logger.warning("Base de données corrompue — réinitialisation complète")
-    try:
-        os.remove(DB_PATH)
-    except Exception as e:
-        logger.error(f"Impossible de supprimer la DB : {e}")
-    init_db()
-
+    logger.info("Base de données PostgreSQL initialisée")
 
 def article_deja_vu(vinted_id, nom_alerte):
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = get_conn()
         c = conn.cursor()
-        c.execute(
-            'SELECT 1 FROM articles_vus WHERE vinted_id=? AND nom_alerte=?',
-            (str(vinted_id), nom_alerte)
-        )
+        c.execute('SELECT 1 FROM articles_vus WHERE vinted_id=%s AND nom_alerte=%s', (str(vinted_id), nom_alerte))
         existe = c.fetchone() is not None
         conn.close()
         return existe
-    except sqlite3.DatabaseError:
-        try:
-            conn.close()
-        except:
-            pass
-        reset_db()
+    except Exception as e:
+        logger.error(f"Erreur article_deja_vu : {e}")
         return False
-
 
 def marquer_article_vu(vinted_id, nom_alerte, titre):
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = get_conn()
         c = conn.cursor()
-        c.execute(
-            'INSERT INTO articles_vus (vinted_id, nom_alerte, titre) VALUES (?,?,?)',
-            (str(vinted_id), nom_alerte, titre)
-        )
+        c.execute('INSERT INTO articles_vus (vinted_id, nom_alerte, titre) VALUES (%s, %s, %s) ON CONFLICT DO NOTHING', (str(vinted_id), nom_alerte, titre))
         conn.commit()
         conn.close()
-    except sqlite3.DatabaseError:
-        try:
-            conn.close()
-        except:
-            pass
-        reset_db()
     except Exception as e:
-        logger.error(f"Erreur inattendue dans marquer_article_vu : {e}")
+        logger.error(f"Erreur marquer_article_vu : {e}")
 
 # ============================================
-# RENOUVELLEMENT AUTOMATIQUE DES TOKENS
+# TOKENS
 # ============================================
 
 def renouveler_access_token():
-    """
-    Utilise le refresh_token pour obtenir un nouvel access_token automatiquement.
-    """
     logger.info("Renouvellement automatique de l'access_token...")
-
     try:
         response = requests.post(
             "https://www.vinted.fr/api/v2/tokens",
-            json={
-                "grant_type": "refresh_token",
-                "refresh_token": VINTED_TOKENS["refresh_token"],
-                "client_id": "web"
-            },
+            json={"grant_type": "refresh_token", "refresh_token": VINTED_TOKENS["refresh_token"], "client_id": "web"},
             headers=CHROME_HEADERS,
             timeout=15
         )
-
         if response.status_code == 200:
             data = response.json()
-            nouveau_access_token = data.get("access_token")
-            nouveau_refresh_token = data.get("refresh_token")
-
-            if nouveau_access_token:
-                VINTED_TOKENS["access_token"] = nouveau_access_token
-                logger.info("Access token renouvelé avec succès")
-
-            if nouveau_refresh_token:
-                VINTED_TOKENS["refresh_token"] = nouveau_refresh_token
-                logger.info("Refresh token renouvelé avec succès")
-
+            if data.get("access_token"):
+                VINTED_TOKENS["access_token"] = data["access_token"]
+                logger.info("Access token renouvelé")
+            if data.get("refresh_token"):
+                VINTED_TOKENS["refresh_token"] = data["refresh_token"]
+                logger.info("Refresh token renouvelé")
             return True
         else:
             logger.error(f"Échec renouvellement token (status {response.status_code})")
-            envoyer_telegram(
-                "⚠️ Les tokens Vinted ont expiré.\n"
-                "L'achat automatique ne fonctionne plus.\n\n"
-                "Mets à jour les tokens dans le code manuellement."
-            )
+            envoyer_telegram("⚠️ Tokens Vinted expirés — mets à jour les tokens dans le code manuellement.")
             return False
-
     except Exception as e:
         logger.error(f"Erreur renouvellement token : {e}")
         return False
 
 # ============================================
-# SESSION VINTED
+# SESSIONS
 # ============================================
 
 def creer_session_authentifiee():
-    """Crée une session avec les tokens pour pouvoir acheter"""
     session = requests.Session()
     session.headers.update(CHROME_HEADERS)
-    session.headers.update({
-        "Authorization": f"Bearer {VINTED_TOKENS['access_token']}"
-    })
+    session.headers.update({"Authorization": f"Bearer {VINTED_TOKENS['access_token']}"})
     session.cookies.set("access_token_web", VINTED_TOKENS["access_token"], domain=".vinted.fr")
     session.cookies.set("refresh_token_web", VINTED_TOKENS["refresh_token"], domain=".vinted.fr")
     session.cookies.set("_vinted_fr_session", VINTED_TOKENS["session"], domain=".vinted.fr")
-
     try:
         session.get('https://www.vinted.fr', timeout=15)
     except Exception as e:
         logger.error(f"Erreur session authentifiée: {e}")
-
     return session
 
-
 def creer_session_vinted():
-    """Session simple pour la surveillance"""
     session = requests.Session()
     session.headers.update(CHROME_HEADERS)
     try:
@@ -303,25 +155,13 @@ def envoyer_telegram(message, photo_url=None, reply_markup=None):
     try:
         if photo_url:
             url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendPhoto"
-            payload = {
-                'chat_id': TELEGRAM_CHAT_ID,
-                'photo': photo_url,
-                'caption': message,
-                'parse_mode': 'HTML'
-            }
-            if reply_markup:
-                payload['reply_markup'] = json.dumps(reply_markup)
-            requests.post(url, json=payload)
+            payload = {'chat_id': TELEGRAM_CHAT_ID, 'photo': photo_url, 'caption': message, 'parse_mode': 'HTML'}
         else:
             url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-            payload = {
-                'chat_id': TELEGRAM_CHAT_ID,
-                'text': message,
-                'parse_mode': 'HTML'
-            }
-            if reply_markup:
-                payload['reply_markup'] = json.dumps(reply_markup)
-            requests.post(url, json=payload)
+            payload = {'chat_id': TELEGRAM_CHAT_ID, 'text': message, 'parse_mode': 'HTML'}
+        if reply_markup:
+            payload['reply_markup'] = json.dumps(reply_markup)
+        requests.post(url, json=payload)
     except Exception as e:
         logger.error(f"Erreur Telegram: {e}")
 
@@ -330,73 +170,39 @@ def envoyer_telegram(message, photo_url=None, reply_markup=None):
 # ============================================
 
 def choisir_point_relais(shipping_options_disponibles):
-    """Choisit le meilleur point relais selon l'ordre de priorité"""
     rate_uuids_disponibles = {opt.get("rate_uuid") for opt in shipping_options_disponibles}
-
     for point in POINTS_RELAIS:
         if point["rate_uuid"] in rate_uuids_disponibles:
             logger.info(f"Point relais sélectionné : {point['nom']}")
             return point
-
-    logger.warning("Aucun point relais préféré disponible — utilisation du point par défaut")
     return None
 
-
 def acheter_article(item_id, tentative=1):
-    """
-    Processus d'achat automatique en 3 étapes.
-    En cas d'erreur 401, renouvelle le token et réessaie automatiquement.
-    """
     session = creer_session_authentifiee()
 
-    # --- Étape 1 : Initialisation du checkout ---
     try:
-        logger.info(f"Étape 1 : Initialisation checkout pour item {item_id}")
         response = session.post(
             f"https://www.vinted.fr/api/v2/purchases/{item_id}/checkout",
-            json={
-                "components": {
-                    "item_presentation_escrow_v2": {},
-                    "additional_service": {},
-                    "payment_method": {},
-                    "shipping_address": {},
-                    "shipping_pickup_options": {},
-                    "shipping_pickup_details": {}
-                }
-            },
+            json={"components": {"item_presentation_escrow_v2": {}, "additional_service": {}, "payment_method": {}, "shipping_address": {}, "shipping_pickup_options": {}, "shipping_pickup_details": {}}},
             timeout=15
         )
-
-        # Token expiré → renouvellement automatique
         if response.status_code == 401 and tentative == 1:
-            logger.warning("Token expiré — renouvellement automatique...")
             if renouveler_access_token():
                 return acheter_article(item_id, tentative=2)
-            else:
-                return False, "Token expiré et renouvellement impossible"
-
+            return False, "Token expiré et renouvellement impossible"
         if response.status_code not in [200, 201]:
             return False, f"Échec étape 1 (status {response.status_code})"
-
         data = response.json()
         checkout = data.get("checkout", {})
         purchase_id = checkout.get("id")
-
         if not purchase_id:
             return False, "Impossible de récupérer le purchase_id"
-
-        logger.info(f"Purchase ID : {purchase_id}")
-
     except Exception as e:
         return False, f"Erreur étape 1 : {e}"
 
-    # --- Étape 2 : Sélection du point relais ---
     try:
-        logger.info("Étape 2 : Sélection du point relais")
-
         pickup_types = checkout.get("components", {}).get("shipping_pickup_details", {}).get("pickup_types", {})
         pickup_options = pickup_types.get("pickup", {}).get("shipping_options", [])
-
         if not pickup_options:
             pickup_option = checkout.get("components", {}).get("shipping_pickup_options", {})
             selected_rate_uuid = pickup_option.get("pickup_options", {}).get("pickup", {}).get("selected_rate_uuid")
@@ -415,178 +221,100 @@ def acheter_article(item_id, tentative=1):
 
         response2 = session.patch(
             f"https://www.vinted.fr/api/v2/purchases/{purchase_id}/checkout",
-            json={
-                "components": {
-                    "shipping_pickup_options": {"pickup_type": 2},
-                    "shipping_pickup_details": {
-                        "selected_rate_uuid": selected_rate_uuid,
-                        "shipping_point_uuid": point_uuid
-                    }
-                }
-            },
+            json={"components": {"shipping_pickup_options": {"pickup_type": 2}, "shipping_pickup_details": {"selected_rate_uuid": selected_rate_uuid, "shipping_point_uuid": point_uuid}}},
             timeout=15
         )
-
         if response2.status_code not in [200, 201]:
             return False, f"Échec étape 2 (status {response2.status_code})"
-
-        data2 = response2.json()
-        checksum = data2.get("checkout", {}).get("checksum")
-
+        checksum = response2.json().get("checkout", {}).get("checksum")
         if not checksum:
             return False, "Impossible de récupérer le checksum"
-
-        logger.info(f"Checksum récupéré, point relais : {point_relais_nom}")
-
     except Exception as e:
         return False, f"Erreur étape 2 : {e}"
 
-    # --- Étape 3 : Paiement ---
     try:
-        logger.info("Étape 3 : Paiement")
-
         response3 = session.post(
             f"https://www.vinted.fr/api/v2/purchases/{purchase_id}/payment",
-            json={
-                "checksum": checksum,
-                "payment_options": {
-                    "browser_info": {
-                        "language": "fr-FR",
-                        "color_depth": 32,
-                        "java_enabled": False,
-                        "screen_height": 956,
-                        "screen_width": 1470,
-                        "timezone_offset": -60
-                    }
-                }
-            },
+            json={"checksum": checksum, "payment_options": {"browser_info": {"language": "fr-FR", "color_depth": 32, "java_enabled": False, "screen_height": 956, "screen_width": 1470, "timezone_offset": -60}}},
             timeout=15
         )
-
         if response3.status_code in [200, 201]:
-            logger.info(f"Achat réussi pour item {item_id} via {point_relais_nom}")
             return True, f"Article acheté via {point_relais_nom}"
-        else:
-            return False, f"Échec paiement (status {response3.status_code}) : {response3.text[:200]}"
-
+        return False, f"Échec paiement (status {response3.status_code}) : {response3.text[:200]}"
     except Exception as e:
         return False, f"Erreur étape 3 : {e}"
 
-
 def traiter_callback_achat(item_id):
-    """Appelé quand tu cliques sur le bouton Acheter dans Telegram"""
-    logger.info(f"Achat automatique déclenché pour item {item_id}")
     envoyer_telegram(f"⏳ Achat en cours pour l'article {item_id}...")
-
     succes, message = acheter_article(item_id)
-
     if succes:
         envoyer_telegram(f"✅ Achat réussi !\n\n{message}")
     else:
         envoyer_telegram(f"❌ Achat échoué : {message}")
 
 # ============================================
-# WEBHOOK TELEGRAM (pour le bouton Acheter)
+# CALLBACKS TELEGRAM
 # ============================================
 
 derniere_update_id = None
 
 def verifier_callbacks_telegram():
     global derniere_update_id
-
     try:
         url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/getUpdates"
         params = {"timeout": 1, "limit": 10}
         if derniere_update_id:
             params["offset"] = derniere_update_id + 1
-
         response = requests.get(url, params=params, timeout=5)
         if response.status_code != 200:
             return
-
-        updates = response.json().get("result", [])
-
-        for update in updates:
+        for update in response.json().get("result", []):
             derniere_update_id = update.get("update_id")
             callback = update.get("callback_query")
-
             if not callback:
                 continue
-
-            callback_id = callback.get("id")
-            callback_data = callback.get("data", "")
-
-            # Répond immédiatement à Telegram
-            requests.post(
-                f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/answerCallbackQuery",
-                json={"callback_query_id": callback_id, "text": "⏳ Achat en cours..."},
-                timeout=5
-            )
-
-            if callback_data.startswith("acheter_"):
-                item_id = callback_data.replace("acheter_", "")
-                traiter_callback_achat(item_id)
-
+            requests.post(f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/answerCallbackQuery", json={"callback_query_id": callback.get("id"), "text": "⏳ Achat en cours..."}, timeout=5)
+            if callback.get("data", "").startswith("acheter_"):
+                traiter_callback_achat(callback["data"].replace("acheter_", ""))
     except Exception as e:
-        logger.error(f"Erreur vérification callbacks: {e}")
+        logger.error(f"Erreur callbacks: {e}")
 
 # ============================================
 # RECHERCHE
 # ============================================
 
 def chercher_par_brand_id(session, brand_id, prix_min=None, prix_max=None):
-    params = {
-        'brand_ids[]': brand_id,
-        'order': 'newest_first',
-        'per_page': 20,
-    }
-    if prix_min:
-        params["price_from"] = prix_min
-    if prix_max:
-        params["price_to"] = prix_max
+    params = {'brand_ids[]': brand_id, 'order': 'newest_first', 'per_page': 20}
+    if prix_min: params["price_from"] = prix_min
+    if prix_max: params["price_to"] = prix_max
     try:
-        response = session.get(
-            "https://www.vinted.fr/api/v2/catalog/items",
-            params=params,
-            timeout=15
-        )
+        response = session.get("https://www.vinted.fr/api/v2/catalog/items", params=params, timeout=15)
         if response.status_code == 200:
             return response.json().get("items", [])
         elif response.status_code == 429:
-            logger.warning("Rate limit Vinted (429) — pause 60s")
+            logger.warning("Rate limit (429) — pause 60s")
             time.sleep(60)
     except Exception as e:
         logger.error(f"Erreur réseau brand_id {brand_id}: {e}")
     return []
 
-
 def chercher_par_user_id(session, user_id, prix_min=None, prix_max=None):
-    params = {
-        'user_ids[]': user_id,
-        'order': 'newest_first',
-        'per_page': 20,
-    }
-    if prix_min:
-        params["price_from"] = prix_min
-    if prix_max:
-        params["price_to"] = prix_max
+    params = {'user_ids[]': user_id, 'order': 'newest_first', 'per_page': 20}
+    if prix_min: params["price_from"] = prix_min
+    if prix_max: params["price_to"] = prix_max
     try:
-        response = session.get(
-            "https://www.vinted.fr/api/v2/catalog/items",
-            params=params,
-            timeout=15
-        )
+        response = session.get("https://www.vinted.fr/api/v2/catalog/items", params=params, timeout=15)
         if response.status_code == 200:
             return response.json().get("items", [])
         elif response.status_code == 429:
-            logger.warning("Rate limit Vinted (429) — pause 60s")
+            logger.warning("Rate limit (429) — pause 60s")
             time.sleep(60)
     except Exception as e:
         logger.error(f"Erreur réseau user_id {user_id}: {e}")
     return []
 
 # ============================================
-# FORMATAGE ARTICLE
+# FORMATAGE
 # ============================================
 
 def formater_article(article, nom_alerte):
@@ -596,28 +324,9 @@ def formater_article(article, nom_alerte):
     lien = f"https://www.vinted.fr/items/{vid}"
     photos = article.get("photos", [])
     photo_url = photos[0].get("url", "") if photos else ""
-
-    message = (
-        f"🎯 <b>{nom_alerte}</b>\n\n"
-        f"{titre}\n"
-        f"💰 {prix}€\n\n"
-        f"{lien}"
-    )
-
-    reply_markup = {
-        "inline_keyboard": [[
-            {"text": "🛒 Acheter", "callback_data": f"acheter_{vid}"},
-            {"text": "👁 Voir", "url": lien}
-        ]]
-    }
-
-    return {
-        "vid": vid,
-        "titre": titre,
-        "message": message,
-        "photo_url": photo_url,
-        "reply_markup": reply_markup
-    }
+    message = f"🎯 <b>{nom_alerte}</b>\n\n{titre}\n💰 {prix}€\n\n{lien}"
+    reply_markup = {"inline_keyboard": [[{"text": "🛒 Acheter", "callback_data": f"acheter_{vid}"}, {"text": "👁 Voir", "url": lien}]]}
+    return {"vid": vid, "titre": titre, "message": message, "photo_url": photo_url, "reply_markup": reply_markup}
 
 # ============================================
 # CROSS-CHECK
@@ -627,7 +336,6 @@ def cross_check_et_notifier(article, nom_alerte_source):
     brand_id_article = article.get("brand_id")
     user_id_article = article.get("user", {}).get("id")
     vid = str(article.get("id"))
-
     for alerte in ALERTES:
         nom = alerte["nom"]
         if nom == nom_alerte_source:
@@ -640,12 +348,7 @@ def cross_check_et_notifier(article, nom_alerte_source):
         if match and not article_deja_vu(vid, nom):
             infos = formater_article(article, nom)
             marquer_article_vu(vid, nom, infos["titre"])
-            logger.info(f"NOUVEAU [{nom}] (cross-check depuis {nom_alerte_source}) : {infos['titre']}")
             envoyer_telegram(infos["message"], infos["photo_url"], infos["reply_markup"])
-
-# ============================================
-# TRAITEMENT DES ARTICLES
-# ============================================
 
 def traiter_articles(articles, nom_alerte):
     for article in articles:
@@ -664,7 +367,7 @@ def traiter_articles(articles, nom_alerte):
 
 def boucle_principale():
     init_db()
-    envoyer_telegram("🟢 Bot Vinted démarré — bouton Acheter actif")
+    envoyer_telegram("🟢 Bot Vinted démarré — base de données persistante active")
     session = creer_session_vinted()
     compteur = 0
     erreurs_consecutives = 0
@@ -672,43 +375,31 @@ def boucle_principale():
     while True:
         try:
             verifier_callbacks_telegram()
-
             if compteur > 0 and compteur % 500 == 0:
-                logger.info("Renouvellement de la session Vinted...")
                 session = creer_session_vinted()
-
             for alerte in ALERTES:
                 nom = alerte["nom"]
                 prix_min = alerte.get("prix_min")
                 prix_max = alerte.get("prix_max")
                 logger.info(f"Recherche : {nom}")
-
                 if "brand_id" in alerte:
                     articles = chercher_par_brand_id(session, alerte["brand_id"], prix_min, prix_max)
                 elif "user_id" in alerte:
                     articles = chercher_par_user_id(session, alerte["user_id"], prix_min, prix_max)
                 else:
                     articles = []
-
                 traiter_articles(articles, nom)
-
             erreurs_consecutives = 0
             compteur += 1
             time.sleep(INTERVAL_SECONDES)
-
         except Exception as e:
             erreurs_consecutives += 1
             logger.error(f"Erreur inattendue (#{erreurs_consecutives}) : {e}")
             envoyer_telegram(f"⚠️ Erreur bot : {e}")
-
             if erreurs_consecutives >= 5:
-                logger.info("Trop d'erreurs — renouvellement de session forcé")
                 session = creer_session_vinted()
                 erreurs_consecutives = 0
-
             time.sleep(30)
-
-# ============================================
 
 if __name__ == "__main__":
     boucle_principale()
