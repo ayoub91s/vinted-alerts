@@ -302,7 +302,10 @@ def verifier_callbacks_telegram():
             if callback_data.startswith("acheter_"):
                 item_id = callback_data.replace("acheter_", "")
                 logger.info(f"Callback reçu — achat item {item_id}")
-                traiter_callback_achat(item_id)
+                import threading
+                t = threading.Thread(target=traiter_callback_achat, args=(item_id,))
+                t.daemon = True
+                t.start()
 
     except Exception as e:
         logger.error(f"Erreur callbacks: {e}")
