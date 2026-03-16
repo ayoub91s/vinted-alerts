@@ -136,10 +136,7 @@ def creer_session_authentifiee():
     session.cookies.set("access_token_web", VINTED_TOKENS["access_token"], domain=".vinted.fr")
     session.cookies.set("refresh_token_web", VINTED_TOKENS["refresh_token"], domain=".vinted.fr")
     session.cookies.set("_vinted_fr_session", VINTED_TOKENS["session"], domain=".vinted.fr")
-    try:
-        session.get('https://www.vinted.fr', timeout=15)
-    except Exception as e:
-        logger.error(f"Erreur session authentifiée: {e}")
+    logger.info("Session authentifiée créée")
     return session
 
 def creer_session_vinted():
