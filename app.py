@@ -108,7 +108,7 @@ def renouveler_access_token():
         response = requests.post(
             "https://www.vinted.fr/api/v2/tokens",
             json={"grant_type": "refresh_token", "refresh_token": VINTED_TOKENS["refresh_token"], "client_id": "web"},
-            headers=CHROME_HEADERS, timeout=15
+            headers=CHROME_HEADERS, timeout=10
         )
         if response.status_code == 200:
             data = response.json()
@@ -143,7 +143,7 @@ def creer_session_vinted():
     session = requests.Session()
     session.headers.update(CHROME_HEADERS)
     try:
-        session.get('https://www.vinted.fr', timeout=15)
+        session.get('https://www.vinted.fr', timeout=10)
         logger.info("Session Vinted créée")
     except Exception as e:
         logger.error(f"Erreur session: {e}")
@@ -186,7 +186,7 @@ def acheter_article(item_id, tentative=1):
         response = session.post(
             f"https://www.vinted.fr/api/v2/purchases/{item_id}/checkout",
             json={"components": {"item_presentation_escrow_v2": {}, "additional_service": {}, "payment_method": {}, "shipping_address": {}, "shipping_pickup_options": {}, "shipping_pickup_details": {}}},
-            timeout=15
+            timeout=10
         )
         if response.status_code == 401 and tentative == 1:
             if renouveler_access_token():
@@ -224,7 +224,7 @@ def acheter_article(item_id, tentative=1):
         response2 = session.patch(
             f"https://www.vinted.fr/api/v2/purchases/{purchase_id}/checkout",
             json={"components": {"shipping_pickup_options": {"pickup_type": 2}, "shipping_pickup_details": {"selected_rate_uuid": selected_rate_uuid, "shipping_point_uuid": point_uuid}}},
-            timeout=15
+            timeout=10
         )
         if response2.status_code not in [200, 201]:
             return False, f"Échec étape 2 (status {response2.status_code})"
@@ -238,7 +238,7 @@ def acheter_article(item_id, tentative=1):
         response3 = session.post(
             f"https://www.vinted.fr/api/v2/purchases/{purchase_id}/payment",
             json={"checksum": checksum, "payment_options": {"browser_info": {"language": "fr-FR", "color_depth": 32, "java_enabled": False, "screen_height": 956, "screen_width": 1470, "timezone_offset": -60}}},
-            timeout=15
+            timeout=10
         )
         if response3.status_code in [200, 201]:
             return True, f"Article acheté via {point_relais_nom}"
@@ -320,7 +320,7 @@ def chercher_par_brand_id(session, brand_id, prix_min=None, prix_max=None):
     if prix_min: params["price_from"] = prix_min
     if prix_max: params["price_to"] = prix_max
     try:
-        response = session.get("https://www.vinted.fr/api/v2/catalog/items", params=params, timeout=15)
+        response = session.get("https://www.vinted.fr/api/v2/catalog/items", params=params, timeout=10)
         if response.status_code == 200:
             return response.json().get("items", [])
         elif response.status_code == 429:
@@ -334,7 +334,7 @@ def chercher_par_user_id(session, user_id, prix_min=None, prix_max=None):
     if prix_min: params["price_from"] = prix_min
     if prix_max: params["price_to"] = prix_max
     try:
-        response = session.get("https://www.vinted.fr/api/v2/catalog/items", params=params, timeout=15)
+        response = session.get("https://www.vinted.fr/api/v2/catalog/items", params=params, timeout=10)
         if response.status_code == 200:
             return response.json().get("items", [])
         elif response.status_code == 429:
