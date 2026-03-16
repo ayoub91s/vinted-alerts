@@ -246,6 +246,7 @@ def acheter_article(item_id, tentative=1):
         return False, f"Erreur étape 3 : {e}"
 
 def traiter_callback_achat(item_id):
+    logger.info(f"traiter_callback_achat appelé pour {item_id}")
     envoyer_telegram(f"⏳ Achat en cours pour l'article {item_id}...")
     succes, message = acheter_article(item_id)
     if succes:
