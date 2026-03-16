@@ -15,7 +15,7 @@ ALERTES = [
     {"nom": "Rick Owens", "brand_id": 145654, "prix_min": None, "prix_max": None},
     {"nom": "Ann Demeulemeester", "brand_id": 51445, "prix_min": None, "prix_max": None},
     {"nom": "Isaac Sellam", "brand_id": 393343, "prix_min": None, "prix_max": None},
-    {"nom": "Mon profil", "user_id": 259844288, "prix_min": None, "prix_max": None},
+    {"nom": "Mon profil", "user_id": 0, "prix_min": None, "prix_max": None},
 ]
 
 VINTED_TOKENS = {
@@ -266,20 +266,47 @@ def verifier_callbacks_telegram():
     global derniere_update_id
     try:
         url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/getUpdates"
-        params = {"timeout": 1, "limit": 10}
-        if derniere_update_id:
+        # Récupère tous les updates disponibles
+        params = {"limit": 100, "allowed_updates": ["callback_query"]}
+        if derniere_update_id is not None:
             params["offset"] = derniere_update_id + 1
-        response = requests.get(url, params=params, timeout=5)
+
+        response = requests.get(url, params=params, timeout=10)
         if response.status_code != 200:
             return
-        for update in response.json().get("result", []):
-            derniere_update_id = update.get("update_id")
+
+        updates = response.json().get("result", [])
+        if not updates:
+            return
+
+        for update in updates:
+            update_id = update.get("update_id")
+            # Met à jour l'offset immédiatement
+            if derniere_update_id is None or update_id > derniere_update_id:
+                derniere_update_id = update_id
+
             callback = update.get("callback_query")
             if not callback:
                 continue
-            requests.post(f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/answerCallbackQuery", json={"callback_query_id": callback.get("id"), "text": "⏳ Achat en cours..."}, timeout=5)
-            if callback.get("data", "").startswith("acheter_"):
-                traiter_callback_achat(callback["data"].replace("acheter_", ""))
+
+            callback_id = callback.get("id")
+            callback_data = callback.get("data", "")
+
+            # Répond immédiatement à Telegram
+            try:
+                requests.post(
+                    f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/answerCallbackQuery",
+                    json={"callback_query_id": callback_id, "text": "⏳ Achat en cours..."},
+                    timeout=5
+                )
+            except:
+                pass
+
+            if callback_data.startswith("acheter_"):
+                item_id = callback_data.replace("acheter_", "")
+                logger.info(f"Callback reçu — achat item {item_id}")
+                traiter_callback_achat(item_id)
+
     except Exception as e:
         logger.error(f"Erreur callbacks: {e}")
 
