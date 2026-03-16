@@ -15,13 +15,15 @@ ALERTES = [
     {"nom": "Rick Owens", "brand_id": 145654, "prix_min": None, "prix_max": None},
     {"nom": "Ann Demeulemeester", "brand_id": 51445, "prix_min": None, "prix_max": None},
     {"nom": "Isaac Sellam", "brand_id": 393343, "prix_min": None, "prix_max": None},
-    {"nom": "Mon profil", "user_id": 3142336781, "prix_min": None, "prix_max": None},
+    {"nom": "Mon profil", "user_id": 0, "prix_min": None, "prix_max": None},
 ]
 
 VINTED_TOKENS = {
     "refresh_token": "eyJraWQiOiJFNTdZZHJ1SHBsQWp1MmNObzFEb3JIM2oyN0J1NS1zX09QNVB3UGlobjVNIiwiYWxnIjoiUFMyNTYifQ.eyJhY2NvdW50X2lkIjozNzA2Mzc3OSwiYXBwX2lkIjo0LCJhdWQiOiJmci5jb3JlLmFwaSIsImNsaWVudF9pZCI6IndlYiIsImV4cCI6MTc3NDMwNjYwNywiaWF0IjoxNzczNzAxODA3LCJpc3MiOiJ2aW50ZWQtaWFtLXNlcnZpY2UiLCJsb2dpbl90eXBlIjozLCJwdXJwb3NlIjoicmVmcmVzaCIsInNjb3BlIjoidXNlciIsInNpZCI6IjM5NWMyNjNiLTE3NzE1OTY0MTAiLCJzdWIiOiI1NTM5MjQ4NiIsImNjIjoiRlIiLCJhbmlkIjoiYWIyM2VkZGMtMmJiNi00NGM2LWE1MjEtMmU2YzBmMzVhZTBiIiwiYWN0Ijp7InN1YiI6IjU1MzkyNDg2In19.HcmY3o4lqKNd1Uh4kwyyjOwfI2e0lcxYNRzFgimBN9HhtXmTDTRVuB9fdIurH2X1cXzQelbfeuoJspcN7yYkMiKrfnntBn-Ts3Ii2GsNBt58DCCklV96j0XiZv3szV7WUbEPs2TpCRkgaVBk0HyvFf4R5ld_PVc6FFzzFCQyR6N2vQSsR3jOldjJqyG8rbLnham6RHNYpqpEeqlw1kozoC2YeqYsC5-K4lteT3YIqcFmL_rS6dPK0AGLcqnrIvwpRpZ0M4vxTwK9Hhq1iW0T3jR-Pm62D5BevsbDz0b6wuYLGXYTX0eK4IG1ZnsL3ao8ccXzk_v0u3WOPsiNGU-79Q",
     "access_token": "eyJraWQiOiJFNTdZZHJ1SHBsQWp1MmNObzFEb3JIM2oyN0J1NS1zX09QNVB3UGlobjVNIiwiYWxnIjoiUFMyNTYifQ.eyJhY2NvdW50X2lkIjozNzA2Mzc3OSwiYXBwX2lkIjo0LCJhdWQiOiJmci5jb3JlLmFwaSIsImNsaWVudF9pZCI6IndlYiIsImV4cCI6MTc3MzcwOTAwNywiaWF0IjoxNzczNzAxODA3LCJpc3MiOiJ2aW50ZWQtaWFtLXNlcnZpY2UiLCJsb2dpbl90eXBlIjozLCJwdXJwb3NlIjoiYWNjZXNzIiwic2NvcGUiOiJ1c2VyIiwic2lkIjoiMzk1YzI2M2ItMTc3MTU5NjQxMCIsInN1YiI6IjU1MzkyNDg2IiwiY2MiOiJGUiIsImFuaWQiOiJhYjIzZWRkYy0yYmI2LTQ0YzYtYTUyMS0yZTZjMGYzNWFlMGIiLCJhY3QiOnsic3ViIjoiNTUzOTI0ODYifX0.tKAHT_SHsH6i9oTayeu1fXBPcVLZgxYE4MfzB61UHLXGuJFa3QalIt2d0CmXx-TnYB49Bz6sX6npEIEHiHLQtK-MSfFkVPH5pFj4vzbkf53tjgGsgFI3zY2DP6nteGNhZ8BojLzdzWiSo-UGJYiR5sGJO6iLuV1Lv1m8jrg8AjmyuZy3e8OhzKrSRkhFjbLK14y9ujv4M977xqjcbu_uIjEU6vZ4Dw-2HO5JQ7IpjRydZgi5wySXC-KEziZaY6Zik6NnOmGWNNfr_RpobaF53XumlxruiAuo3XBmXZWlHfBFwpXP-BximMfe9H25DMq-EEd6HQm59twzG7N5S70SKA",
     "session": "bzJra3QrcWFxbzMxRThzRmlJLzJhK3lmUVN1L3IxWWNWcjFNS0Nua0RQR05nREVOa2xnNGJNdUZ2YVpaU2JyRXptT3lVMUp5ck5qVHc0Mk55YXhYTTZEV2lNMkJRSkhtZ2NPNXFwL0I1TmNLQzhCZDc3YnlGNURNT0duemF4ZmwwNlk5S1dzaWFLYWZDdXhHa3hJdndVM2kzQyt5UXE0VHJ6alVEVm83ZFZZUERFVUF6RnBsZkQrQzJTZEdTbWZIZWhPanVXTy9UUlZkT0U1S09pTUZTOGlId3p1dVdDUjM3Y3BWRml1allna1FVMW5mZmJicjM2MVZsNkpQb1FmNk1VS0VTeTNyU0RidTRtK1pVOVB3ZGtLbDZFMHBsbmRSRnI0NStwc2Q0K050SGkzS2pzV1dUYlVJanFoN0lWcXotLVUxMWRWb0JHd3NTUzBRY2ZkWWNWNWc9PQ%3D%3D--34ee1cf1a40849e0b6030d755c1a5e7c3b611bad",
+    "cf_clearance": "lvykSBBuDeKGIbmJcs.iczqn3q7TacwVU1t2phgn40k-1773701809-1.2.1.1-2occXASM7dbPcxy0oTt5SLvijaQVB4T.loFDKsI6EgdOnIyVP7bOm1E99ygL5YKB0TMu9XuaQ4t3HvMlLv5tzt5gIIvKdUqtqV_zYudiFkS2yWZKczvNS2LT4b9lUPkTJMFL4OVLRzRiC3xnlvJJsWhqSOPmAfHncIbTxX4Gpz05nber0udkU3nfQK.kyIYoWoSNQNkdAr8_0tvcNHuJ3ZuIpanP.MbSM.imU0NwgS4",
+    "datadome": "X~gxBVEY9zRGHL3kdw1ljeqt_Ou01M1cAwt~q4RX9s_8NHZsa3FSm8pCtEpF5jrhTi~nYiwiEtrgD7N_whYbLVH_u0V1N4aoKjkp6mvFHuQ4mnyG47llU7Jm899igbXb",
 }
 
 POINTS_RELAIS = [
@@ -132,10 +134,18 @@ def renouveler_access_token():
 def creer_session_authentifiee():
     session = requests.Session()
     session.headers.update(CHROME_HEADERS)
-    session.headers.update({"Authorization": f"Bearer {VINTED_TOKENS['access_token']}"})
+    session.headers.update({
+        "Authorization": f"Bearer {VINTED_TOKENS['access_token']}",
+        "X-Requested-With": "XMLHttpRequest",
+        "Sec-Fetch-Site": "same-origin",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Dest": "empty",
+    })
     session.cookies.set("access_token_web", VINTED_TOKENS["access_token"], domain=".vinted.fr")
     session.cookies.set("refresh_token_web", VINTED_TOKENS["refresh_token"], domain=".vinted.fr")
     session.cookies.set("_vinted_fr_session", VINTED_TOKENS["session"], domain=".vinted.fr")
+    session.cookies.set("cf_clearance", VINTED_TOKENS["cf_clearance"], domain=".vinted.fr")
+    session.cookies.set("datadome", VINTED_TOKENS["datadome"], domain=".vinted.fr")
     logger.info("Session authentifiée créée")
     return session
 
@@ -180,71 +190,81 @@ def choisir_point_relais(shipping_options_disponibles):
     return None
 
 def acheter_article(item_id, tentative=1):
-    session = creer_session_authentifiee()
+    """
+    Achat automatique via Playwright (vrai navigateur Chrome).
+    Contourne Cloudflare/DataDome complètement.
+    """
     try:
-        logger.info(f">>> DEBUT ETAPE 1 pour item {item_id}")
-        response = session.post(
-            f"https://www.vinted.fr/api/v2/purchases/{item_id}/checkout",
-            json={"components": {"item_presentation_escrow_v2": {}, "additional_service": {}, "payment_method": {}, "shipping_address": {}, "shipping_pickup_options": {}, "shipping_pickup_details": {}}},
-            timeout=15
-        )
-        if response.status_code == 401 and tentative == 1:
-            if renouveler_access_token():
-                return acheter_article(item_id, tentative=2)
-            return False, "Token expiré"
-        if response.status_code not in [200, 201]:
-            return False, f"Échec étape 1 (status {response.status_code}) : {response.text[:300]}"
-        data = response.json()
-        checkout = data.get("checkout", {})
-        purchase_id = checkout.get("id")
-        if not purchase_id:
-            return False, "Impossible de récupérer le purchase_id"
-    except Exception as e:
-        return False, f"Erreur étape 1 : {e}"
+        from playwright.sync_api import sync_playwright
+        logger.info(f"Lancement Chrome pour achat item {item_id}")
 
-    try:
-        pickup_types = checkout.get("components", {}).get("shipping_pickup_details", {}).get("pickup_types", {})
-        pickup_options = pickup_types.get("pickup", {}).get("shipping_options", [])
-        if not pickup_options:
-            pickup_option = checkout.get("components", {}).get("shipping_pickup_options", {})
-            selected_rate_uuid = pickup_option.get("pickup_options", {}).get("pickup", {}).get("selected_rate_uuid")
-            point_uuid = pickup_option.get("pickup_options", {}).get("pickup", {}).get("shipping_point", {}).get("uuid")
-            point_relais_nom = "point relais par défaut"
-        else:
-            point = choisir_point_relais(pickup_options)
-            if point:
-                selected_rate_uuid = point["rate_uuid"]
-                point_uuid = point["uuid"]
-                point_relais_nom = point["nom"]
+        with sync_playwright() as p:
+            browser = p.chromium.launch(
+                headless=True,
+                args=[
+                    "--no-sandbox",
+                    "--disable-setuid-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                ]
+            )
+            context = browser.new_context(
+                viewport={"width": 1280, "height": 720},
+                user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                locale="fr-FR",
+            )
+
+            # Injecter les cookies de session
+            context.add_cookies([
+                {"name": "access_token_web", "value": VINTED_TOKENS["access_token"], "domain": ".vinted.fr", "path": "/"},
+                {"name": "refresh_token_web", "value": VINTED_TOKENS["refresh_token"], "domain": ".vinted.fr", "path": "/"},
+                {"name": "_vinted_fr_session", "value": VINTED_TOKENS["session"], "domain": ".vinted.fr", "path": "/"},
+                {"name": "cf_clearance", "value": VINTED_TOKENS["cf_clearance"], "domain": ".vinted.fr", "path": "/"},
+                {"name": "datadome", "value": VINTED_TOKENS["datadome"], "domain": ".vinted.fr", "path": "/"},
+            ])
+
+            page = context.new_page()
+
+            # Ouvre la page de l'article
+            logger.info(f"Ouverture page article {item_id}")
+            page.goto(f"https://www.vinted.fr/items/{item_id}", wait_until="domcontentloaded", timeout=30000)
+            page.wait_for_timeout(2000)
+
+            # Clique sur le bouton Acheter
+            logger.info("Recherche bouton Acheter")
+            buy_btn = page.locator("button:has-text('Acheter')").first
+            if not buy_btn.is_visible():
+                browser.close()
+                return False, "Bouton Acheter introuvable sur la page"
+
+            buy_btn.click()
+            logger.info("Bouton Acheter cliqué")
+            page.wait_for_timeout(2000)
+
+            # Cherche et clique sur Continuer/Suivant
+            for btn_text in ["Continuer", "Suivant", "Confirmer", "Payer"]:
+                btn = page.locator(f"button:has-text('{btn_text}')").first
+                if btn.is_visible():
+                    btn.click()
+                    logger.info(f"Bouton '{btn_text}' cliqué")
+                    page.wait_for_timeout(2000)
+                    break
+
+            # Vérifie si l'achat est confirmé
+            page.wait_for_timeout(3000)
+            url_finale = page.url
+            contenu = page.content()
+
+            browser.close()
+
+            if "confirmation" in url_finale or "success" in url_finale or "merci" in contenu.lower() or "commandé" in contenu.lower():
+                return True, "Article acheté via navigateur automatique"
             else:
-                selected_rate_uuid = pickup_options[0].get("rate_uuid")
-                point_uuid = checkout.get("components", {}).get("shipping_pickup_options", {}).get("pickup_options", {}).get("pickup", {}).get("shipping_point", {}).get("uuid")
-                point_relais_nom = "première option disponible"
+                return False, f"Achat non confirmé — URL: {url_finale[:100]}"
 
-        response2 = session.patch(
-            f"https://www.vinted.fr/api/v2/purchases/{purchase_id}/checkout",
-            json={"components": {"shipping_pickup_options": {"pickup_type": 2}, "shipping_pickup_details": {"selected_rate_uuid": selected_rate_uuid, "shipping_point_uuid": point_uuid}}},
-            timeout=15
-        )
-        if response2.status_code not in [200, 201]:
-            return False, f"Échec étape 2 (status {response2.status_code})"
-        checksum = response2.json().get("checkout", {}).get("checksum")
-        if not checksum:
-            return False, "Impossible de récupérer le checksum"
     except Exception as e:
-        return False, f"Erreur étape 2 : {e}"
-
-    try:
-        response3 = session.post(
-            f"https://www.vinted.fr/api/v2/purchases/{purchase_id}/payment",
-            json={"checksum": checksum, "payment_options": {"browser_info": {"language": "fr-FR", "color_depth": 32, "java_enabled": False, "screen_height": 956, "screen_width": 1470, "timezone_offset": -60}}},
-            timeout=15
-        )
-        if response3.status_code in [200, 201]:
-            return True, f"Article acheté via {point_relais_nom}"
-        return False, f"Échec paiement (status {response3.status_code}) : {response3.text[:200]}"
-    except Exception as e:
-        return False, f"Erreur étape 3 : {e}"
+        logger.error(f"Erreur Playwright : {e}")
+        return False, f"Erreur navigateur : {e}"
 
 def traiter_callback_achat(item_id):
     envoyer_telegram(f"⏳ Achat en cours pour l'article {item_id}...")
