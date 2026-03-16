@@ -182,6 +182,7 @@ def choisir_point_relais(shipping_options_disponibles):
 def acheter_article(item_id, tentative=1):
     session = creer_session_authentifiee()
     try:
+        logger.info(f">>> DEBUT ETAPE 1 pour item {item_id}")
         response = session.post(
             f"https://www.vinted.fr/api/v2/purchases/{item_id}/checkout",
             json={"components": {"item_presentation_escrow_v2": {}, "additional_service": {}, "payment_method": {}, "shipping_address": {}, "shipping_pickup_options": {}, "shipping_pickup_details": {}}},
@@ -246,7 +247,6 @@ def acheter_article(item_id, tentative=1):
         return False, f"Erreur étape 3 : {e}"
 
 def traiter_callback_achat(item_id):
-    logger.info(f"traiter_callback_achat appelé pour {item_id}")
     envoyer_telegram(f"⏳ Achat en cours pour l'article {item_id}...")
     succes, message = acheter_article(item_id)
     if succes:
