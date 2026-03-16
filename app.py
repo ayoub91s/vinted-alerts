@@ -322,7 +322,17 @@ def formater_article(article, nom_alerte):
     vid = str(article.get("id"))
     lien = f"https://www.vinted.fr/items/{vid}"
     photos = article.get("photos", [])
-    photo_url = photos[0].get("url", "") if photos else ""
+    photo_url = ""
+if photos:
+    thumbnails = photos[0].get("thumbnails", [])
+    # Cherche la miniature 310x430
+    for thumb in thumbnails:
+        if thumb.get("width") == 310:
+            photo_url = thumb.get("url", "")
+            break
+    # Fallback sur l'url principale si pas de miniature
+    if not photo_url:
+        photo_url = photos[0].get("url", "")
     message = f"🎯 <b>{nom_alerte}</b>\n\n{titre}\n💰 {prix}€\n\n{lien}"
     reply_markup = {"inline_keyboard": [[{"text": "🛒 Acheter", "callback_data": f"acheter_{vid}"}, {"text": "👁 Voir", "url": lien}]]}
     return {"vid": vid, "titre": titre, "message": message, "photo_url": photo_url, "reply_markup": reply_markup}
