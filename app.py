@@ -10,6 +10,7 @@ TELEGRAM_TOKEN = "8142414797:AAHW8tNIsrncPLNsruNO0aZUbspto7Nj2Ys"
 TELEGRAM_CHAT_ID = "5741568179"
 INTERVAL_SECONDES = 3
 DATABASE_URL = os.environ.get("DATABASE_URL")
+
 ALERTES = [
     {"nom": "Rick Owens", "brand_id": 145654, "prix_min": None, "prix_max": None},
     {"nom": "Ann Demeulemeester", "brand_id": 51445, "prix_min": None, "prix_max": None},
@@ -24,15 +25,15 @@ VINTED_TOKENS = {
 }
 
 POINTS_RELAIS = [
-    {"nom": "Locker Rain X Wash Bondoufle", "uuid": "7d5b16ac-cc4c-4398-b07e-fbf8ac74c725", "rate_uuid": "abe64f67-389f-4c2b-b270-39c733127c64", "carrier": "MONDIAL"},
-    {"nom": "Rain x Wash", "uuid": "56ce4063-e960-4f68-adcc-4c2d5610603e", "rate_uuid": "99c3aec2-87a6-4435-b14b-68c376560184", "carrier": "VINTEDGO-SHOP-FR"},
-    {"nom": "Wash N Dry", "uuid": "7fe02049-a4e6-47de-97bc-2131c78a112e", "rate_uuid": "99c3aec2-87a6-4435-b14b-68c376560184", "carrier": "VINTEDGO-SHOP-FR"},
-    {"nom": "TLT Rapid Market (DPD)", "uuid": "36455f4f-130a-45ed-bc43-f8f927aee30b", "rate_uuid": "c16d2578-dd8c-4328-9b0c-55f0e8cfb084", "carrier": "DPD-BE"},
-    {"nom": "TLT Rapid Market (Chronopost)", "uuid": "491d0cc8-1c3e-4117-9833-1be724e5a2b2", "rate_uuid": "c50f3c3e-90c1-4420-b46f-5b35f85c293b", "carrier": "BRT-SHOP-IT"},
-    {"nom": "SL Informatique", "uuid": "fd42da4b-fcc6-48d1-bfc7-c7a1b08e32fa", "rate_uuid": "c50f3c3e-90c1-4420-b46f-5b35f85c293b", "carrier": "BRT-SHOP-IT"},
-    {"nom": "Chronodrive", "uuid": "3df26c07-3112-4c1c-b143-b08a7685587e", "rate_uuid": "99c3aec2-87a6-4435-b14b-68c376560184", "carrier": "VINTEDGO-SHOP-FR"},
-    {"nom": "Tabac Le Pepere", "uuid": "196024f1-1bdb-4a2a-8f86-4b1695da1cc1", "rate_uuid": "99c3aec2-87a6-4435-b14b-68c376560184", "carrier": "VINTEDGO-SHOP-FR"},
-    {"nom": "Monoprix", "uuid": "2fd1ea7e-9a1b-476c-8a9b-5db8fce4c77f", "rate_uuid": "99c3aec2-87a6-4435-b14b-68c376560184", "carrier": "VINTEDGO-SHOP-FR"},
+    {"nom": "Locker Rain X Wash Bondoufle", "uuid": "7d5b16ac-cc4c-4398-b07e-fbf8ac74c725", "rate_uuid": "abe64f67-389f-4c2b-b270-39c733127c64"},
+    {"nom": "Rain x Wash", "uuid": "56ce4063-e960-4f68-adcc-4c2d5610603e", "rate_uuid": "99c3aec2-87a6-4435-b14b-68c376560184"},
+    {"nom": "Wash N Dry", "uuid": "7fe02049-a4e6-47de-97bc-2131c78a112e", "rate_uuid": "99c3aec2-87a6-4435-b14b-68c376560184"},
+    {"nom": "TLT Rapid Market (DPD)", "uuid": "36455f4f-130a-45ed-bc43-f8f927aee30b", "rate_uuid": "c16d2578-dd8c-4328-9b0c-55f0e8cfb084"},
+    {"nom": "TLT Rapid Market (Chronopost)", "uuid": "491d0cc8-1c3e-4117-9833-1be724e5a2b2", "rate_uuid": "c50f3c3e-90c1-4420-b46f-5b35f85c293b"},
+    {"nom": "SL Informatique", "uuid": "fd42da4b-fcc6-48d1-bfc7-c7a1b08e32fa", "rate_uuid": "c50f3c3e-90c1-4420-b46f-5b35f85c293b"},
+    {"nom": "Chronodrive", "uuid": "3df26c07-3112-4c1c-b143-b08a7685587e", "rate_uuid": "99c3aec2-87a6-4435-b14b-68c376560184"},
+    {"nom": "Tabac Le Pepere", "uuid": "196024f1-1bdb-4a2a-8f86-4b1695da1cc1", "rate_uuid": "99c3aec2-87a6-4435-b14b-68c376560184"},
+    {"nom": "Monoprix", "uuid": "2fd1ea7e-9a1b-476c-8a9b-5db8fce4c77f", "rate_uuid": "99c3aec2-87a6-4435-b14b-68c376560184"},
 ]
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
@@ -47,7 +48,7 @@ CHROME_HEADERS = {
 }
 
 # ============================================
-# BASE DE DONNÉES POSTGRESQL
+# BASE DE DONNÉES
 # ============================================
 
 def get_conn():
@@ -58,17 +59,16 @@ def init_db():
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS articles_vus (
         vinted_id TEXT,
-        photo_url TEXT,
-        prix TEXT,
-        photo_url TEXT,
-        prix TEXT,
-        photo_url TEXT,
-        prix TEXT,
         nom_alerte TEXT,
         titre TEXT,
+        photo_url TEXT,
+        prix TEXT,
         trouve_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (vinted_id, nom_alerte)
     )''')
+    # Migration si colonnes manquantes
+    c.execute("ALTER TABLE articles_vus ADD COLUMN IF NOT EXISTS photo_url TEXT")
+    c.execute("ALTER TABLE articles_vus ADD COLUMN IF NOT EXISTS prix TEXT")
     conn.commit()
     conn.close()
     logger.info("Base de données PostgreSQL initialisée")
@@ -85,11 +85,14 @@ def article_deja_vu(vinted_id, nom_alerte):
         logger.error(f"Erreur article_deja_vu : {e}")
         return False
 
-def marquer_article_vu(vinted_id, nom_alerte, titre):
+def marquer_article_vu(vinted_id, nom_alerte, titre, photo_url="", prix=""):
     try:
         conn = get_conn()
         c = conn.cursor()
-        c.execute('INSERT INTO articles_vus (vinted_id, nom_alerte, titre, photo_url, prix) VALUES (%s, %s, %s) ON CONFLICT DO NOTHING', (str(vinted_id), nom_alerte, titre))
+        c.execute(
+            'INSERT INTO articles_vus (vinted_id, nom_alerte, titre, photo_url, prix) VALUES (%s, %s, %s, %s, %s) ON CONFLICT DO NOTHING',
+            (str(vinted_id), nom_alerte, titre, photo_url, prix)
+        )
         conn.commit()
         conn.close()
     except Exception as e:
@@ -105,20 +108,17 @@ def renouveler_access_token():
         response = requests.post(
             "https://www.vinted.fr/api/v2/tokens",
             json={"grant_type": "refresh_token", "refresh_token": VINTED_TOKENS["refresh_token"], "client_id": "web"},
-            headers=CHROME_HEADERS,
-            timeout=15
+            headers=CHROME_HEADERS, timeout=15
         )
         if response.status_code == 200:
             data = response.json()
             if data.get("access_token"):
                 VINTED_TOKENS["access_token"] = data["access_token"]
-                logger.info("Access token renouvelé")
             if data.get("refresh_token"):
                 VINTED_TOKENS["refresh_token"] = data["refresh_token"]
-                logger.info("Refresh token renouvelé")
+            logger.info("Tokens renouvelés")
             return True
         else:
-            logger.error(f"Échec renouvellement token (status {response.status_code})")
             envoyer_telegram("⚠️ Tokens Vinted expirés — mets à jour les tokens dans le code manuellement.")
             return False
     except Exception as e:
@@ -184,7 +184,6 @@ def choisir_point_relais(shipping_options_disponibles):
 
 def acheter_article(item_id, tentative=1):
     session = creer_session_authentifiee()
-
     try:
         response = session.post(
             f"https://www.vinted.fr/api/v2/purchases/{item_id}/checkout",
@@ -194,7 +193,7 @@ def acheter_article(item_id, tentative=1):
         if response.status_code == 401 and tentative == 1:
             if renouveler_access_token():
                 return acheter_article(item_id, tentative=2)
-            return False, "Token expiré et renouvellement impossible"
+            return False, "Token expiré"
         if response.status_code not in [200, 201]:
             return False, f"Échec étape 1 (status {response.status_code})"
         data = response.json()
@@ -297,7 +296,6 @@ def chercher_par_brand_id(session, brand_id, prix_min=None, prix_max=None):
         if response.status_code == 200:
             return response.json().get("items", [])
         elif response.status_code == 429:
-            logger.warning("Rate limit (429) — pause 60s")
             time.sleep(60)
     except Exception as e:
         logger.error(f"Erreur réseau brand_id {brand_id}: {e}")
@@ -312,7 +310,6 @@ def chercher_par_user_id(session, user_id, prix_min=None, prix_max=None):
         if response.status_code == 200:
             return response.json().get("items", [])
         elif response.status_code == 429:
-            logger.warning("Rate limit (429) — pause 60s")
             time.sleep(60)
     except Exception as e:
         logger.error(f"Erreur réseau user_id {user_id}: {e}")
@@ -324,14 +321,23 @@ def chercher_par_user_id(session, user_id, prix_min=None, prix_max=None):
 
 def formater_article(article, nom_alerte):
     titre = article.get("title", "")
-    prix = article.get("price", {}).get("amount", "?")
+    prix = str(article.get("price", {}).get("amount", "?"))
     vid = str(article.get("id"))
     lien = f"https://www.vinted.fr/items/{vid}"
     photos = article.get("photos", [])
-    photo_url = photos[0].get("thumbnails", [{}])[2].get("url", "") or photos[0].get("url", "") if photos else ""
+    photo_url = ""
+    if photos:
+        thumbnails = photos[0].get("thumbnails", [])
+        for thumb in thumbnails:
+            if thumb.get("width") == 310:
+                photo_url = thumb.get("url", "")
+                break
+        if not photo_url:
+            photo_url = photos[0].get("url", "")
+
     message = f"🎯 <b>{nom_alerte}</b>\n\n{titre}\n💰 {prix}€\n\n{lien}"
     reply_markup = {"inline_keyboard": [[{"text": "🛒 Acheter", "callback_data": f"acheter_{vid}"}, {"text": "👁 Voir", "url": lien}]]}
-    return {"vid": vid, "titre": titre, "message": message, "photo_url": photo_url, "reply_markup": reply_markup}
+    return {"vid": vid, "titre": titre, "message": message, "photo_url": photo_url, "reply_markup": reply_markup, "prix": prix}
 
 # ============================================
 # CROSS-CHECK
@@ -352,7 +358,7 @@ def cross_check_et_notifier(article, nom_alerte_source):
             match = True
         if match and not article_deja_vu(vid, nom):
             infos = formater_article(article, nom)
-            marquer_article_vu(vid, nom, infos["titre"])
+            marquer_article_vu(vid, nom, infos["titre"], infos["photo_url"], infos["prix"])
             envoyer_telegram(infos["message"], infos["photo_url"], infos["reply_markup"])
 
 def traiter_articles(articles, nom_alerte):
@@ -361,7 +367,7 @@ def traiter_articles(articles, nom_alerte):
         if article_deja_vu(vid, nom_alerte):
             continue
         infos = formater_article(article, nom_alerte)
-        marquer_article_vu(infos["vid"], nom_alerte, infos["titre"])
+        marquer_article_vu(infos["vid"], nom_alerte, infos["titre"], infos["photo_url"], infos["prix"])
         logger.info(f"NOUVEAU [{nom_alerte}] : {infos['titre']}")
         envoyer_telegram(infos["message"], infos["photo_url"], infos["reply_markup"])
         cross_check_et_notifier(article, nom_alerte)
@@ -372,7 +378,7 @@ def traiter_articles(articles, nom_alerte):
 
 def boucle_principale():
     init_db()
-    envoyer_telegram("🟢 Bot Vinted démarré — base de données persistante active")
+    envoyer_telegram("🟢 Bot Vinted démarré")
     session = creer_session_vinted()
     compteur = 0
     erreurs_consecutives = 0
@@ -384,13 +390,11 @@ def boucle_principale():
                 session = creer_session_vinted()
             for alerte in ALERTES:
                 nom = alerte["nom"]
-                prix_min = alerte.get("prix_min")
-                prix_max = alerte.get("prix_max")
                 logger.info(f"Recherche : {nom}")
                 if "brand_id" in alerte:
-                    articles = chercher_par_brand_id(session, alerte["brand_id"], prix_min, prix_max)
+                    articles = chercher_par_brand_id(session, alerte["brand_id"], alerte.get("prix_min"), alerte.get("prix_max"))
                 elif "user_id" in alerte:
-                    articles = chercher_par_user_id(session, alerte["user_id"], prix_min, prix_max)
+                    articles = chercher_par_user_id(session, alerte["user_id"], alerte.get("prix_min"), alerte.get("prix_max"))
                 else:
                     articles = []
                 traiter_articles(articles, nom)
