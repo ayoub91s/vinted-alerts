@@ -9,8 +9,7 @@ from datetime import datetime
 TELEGRAM_TOKEN = "8142414797:AAHW8tNIsrncPLNsruNO0aZUbspto7Nj2Ys"
 TELEGRAM_CHAT_ID = "5741568179"
 INTERVAL_SECONDES = 3
-DATABASE_URL = "postgresql://postgres:UaFzBdpZoZxqfFvKNEECjYQssAaWXiKA@postgres.railway.internal:5432/railway"
-
+DATABASE_URL = os.environ.get("DATABASE_URL")
 ALERTES = [
     {"nom": "Rick Owens", "brand_id": 145654, "prix_min": None, "prix_max": None},
     {"nom": "Ann Demeulemeester", "brand_id": 51445, "prix_min": None, "prix_max": None},
