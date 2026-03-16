@@ -15,13 +15,13 @@ ALERTES = [
     {"nom": "Rick Owens", "brand_id": 145654, "prix_min": None, "prix_max": None},
     {"nom": "Ann Demeulemeester", "brand_id": 51445, "prix_min": None, "prix_max": None},
     {"nom": "Isaac Sellam", "brand_id": 393343, "prix_min": None, "prix_max": None},
-    {"nom": "Mon profil", "user_id": 259844288, "prix_min": None, "prix_max": None},
+    {"nom": "Mon profil", "user_id": 0, "prix_min": None, "prix_max": None},
 ]
 
 VINTED_TOKENS = {
-    "refresh_token": "eyJraWQiOiJFNTdZZHJ1SHBsQWp1MmNObzFEb3JIM2oyN0J1NS1zX09QNVB3UGlobjVNIiwiYWxnIjoiUFMyNTYifQ.eyJhY2NvdW50X2lkIjozNzA2Mzc3OSwiYXBwX2lkIjo0LCJhdWQiOiJmci5jb3JlLmFwaSIsImNsaWVudF9pZCI6IndlYiIsImV4cCI6MTc3NDI2ODQxNiwiaWF0IjoxNzczNjYzNjE2LCJpc3MiOiJ2aW50ZWQtaWFtLXNlcnZpY2UiLCJsb2dpbl90eXBlIjozLCJwdXJwb3NlIjoicmVmcmVzaCIsInNjb3BlIjoidXNlciIsInNpZCI6IjM5NWMyNjNiLTE3NzE1OTY0MTAiLCJzdWIiOiI1NTM5MjQ4NiIsImNjIjoiRlIiLCJhbmlkIjoiYWIyM2VkZGMtMmJiNi00NGM2LWE1MjEtMmU2YzBmMzVhZTBiIiwiYWN0Ijp7InN1YiI6IjU1MzkyNDg2In19.cbKAZoXl9YpnwhbJ6PcwDt2xRz1DtSMTjuDL6zu2sy2UlAmwgG_3pJZkIs0uUqRI_wW-IkldatgeueGbulcmPjwH21GFWPrkGs_BnC7oDpE60tB0h4bKkhiyQ9aBnIP6D50Smi33O4_KrNvsNhBUPmWYSFfqHuFPKtTFKp103YwK8NXhapJnnbTVkhoqAo97PPpqgYjSd4Csb-7U0uIXWKA94IrS4KnYmYYvsH2gQElJsSoHsTR4Cpkf6DwzTroeqTHclICNHy3-11GZxK_mfbnDwId8EDix7OINjnjq8ygkLb51u0-TUDHF82fqLBpYwH3kThBijN_11gqiTqpDhQ",
-    "access_token": "eyJraWQiOiJFNTdZZHJ1SHBsQWp1MmNObzFEb3JIM2oyN0J1NS1zX09QNVB3UGlobjVNIiwiYWxnIjoiUFMyNTYifQ.eyJhY2NvdW50X2lkIjozNzA2Mzc3OSwiYXBwX2lkIjo0LCJhdWQiOiJmci5jb3JlLmFwaSIsImNsaWVudF9pZCI6IndlYiIsImV4cCI6MTc3MzY3MDgxNiwiaWF0IjoxNzczNjYzNjE2LCJpc3MiOiJ2aW50ZWQtaWFtLXNlcnZpY2UiLCJsb2dpbl90eXBlIjozLCJwdXJwb3NlIjoiYWNjZXNzIiwic2NvcGUiOiJ1c2VyIiwic2lkIjoiMzk1YzI2M2ItMTc3MTU5NjQxMCIsInN1YiI6IjU1MzkyNDg2IiwiY2MiOiJGUiIsImFuaWQiOiJhYjIzZWRkYy0yYmI2LTQ0YzYtYTUyMS0yZTZjMGYzNWFlMGIiLCJhY3QiOnsic3ViIjoiNTUzOTI0ODYifX0.V2UFbmL-B9TwXTrol4KD_hUH-9smsZJiZiAV2QOfoZdWO945sLa8q2YLRbc5O2rtax74GUPmRlgOeL7haadSHydC-LPoOO5Qku27dJPrBUfaS0ZS2-aZAKznn1H1oM9oqeU-nFOpdHMm040aBbH77dEgfew9kDNHuc86KJzHgVjKGLcY20KYyaKnsXrDMFnOtoZDD5GMcBsrGOBiW5apRie6TA0DNX0agmw1Eur2iSbFLaaAWHPGWMlYzPT92v55pRFEQMipS7UvbaPpkfOzhct77cMCRNfdBYT69HGBqnK6_krXfYqk4VWxl0njZF_yRmoeZlW4U-UDwR-NdeD7Hg",
-    "session": "M1g0Sk50Wit3Wi8xVXhyODlZTll2WkNTL2srRVp5K2FHSXZVazJxc2xyRFhiaktFeU41d2pyRGwyempieENCOGQwM0w1V0Y2Vk1lY0w4VW04eEJMZWhnS1dKcTFGSTBuMXFidjVFdzZVZEhOclR2NzNFZ3VaWjNzWTFmbnc2aG56Q28vNkVuU0JYaU92elkwOVQvYkZHbmxIZWpmK3hROU5tb0t5RlNZRzJTaWFrRjBPakhSdUJ2Mno1aFBIVW9XZWE1aGNLekJudndqNXpNYy93blJXZEVlVHZ5MS9yWmFkbEdQM3hkVzN2WURpdkkyWjd3aGlDOUpzbzJ2Nzd5NGMyUDNVVlR5ZHNqRFVZelVPZXFWRVRuV2Z6L2Ryc05wWGdCaHNyUnY2Z3ZKQUMySm5iT2R2Z0c0RTh3MHkxOCstLXg0bW1UM08wSWFUa01TU0RYYVZMSnc9PQ%3D%3D--4cd865d4e44c75e28fe1cf52272ab02cc27c7be4",
+    "refresh_token": "eyJraWQiOiJFNTdZZHJ1SHBsQWp1MmNObzFEb3JIM2oyN0J1NS1zX09QNVB3UGlobjVNIiwiYWxnIjoiUFMyNTYifQ.eyJhY2NvdW50X2lkIjozNzA2Mzc3OSwiYXBwX2lkIjo0LCJhdWQiOiJmci5jb3JlLmFwaSIsImNsaWVudF9pZCI6IndlYiIsImV4cCI6MTc3NDMwNjYwNywiaWF0IjoxNzczNzAxODA3LCJpc3MiOiJ2aW50ZWQtaWFtLXNlcnZpY2UiLCJsb2dpbl90eXBlIjozLCJwdXJwb3NlIjoicmVmcmVzaCIsInNjb3BlIjoidXNlciIsInNpZCI6IjM5NWMyNjNiLTE3NzE1OTY0MTAiLCJzdWIiOiI1NTM5MjQ4NiIsImNjIjoiRlIiLCJhbmlkIjoiYWIyM2VkZGMtMmJiNi00NGM2LWE1MjEtMmU2YzBmMzVhZTBiIiwiYWN0Ijp7InN1YiI6IjU1MzkyNDg2In19.HcmY3o4lqKNd1Uh4kwyyjOwfI2e0lcxYNRzFgimBN9HhtXmTDTRVuB9fdIurH2X1cXzQelbfeuoJspcN7yYkMiKrfnntBn-Ts3Ii2GsNBt58DCCklV96j0XiZv3szV7WUbEPs2TpCRkgaVBk0HyvFf4R5ld_PVc6FFzzFCQyR6N2vQSsR3jOldjJqyG8rbLnham6RHNYpqpEeqlw1kozoC2YeqYsC5-K4lteT3YIqcFmL_rS6dPK0AGLcqnrIvwpRpZ0M4vxTwK9Hhq1iW0T3jR-Pm62D5BevsbDz0b6wuYLGXYTX0eK4IG1ZnsL3ao8ccXzk_v0u3WOPsiNGU-79Q",
+    "access_token": "eyJraWQiOiJFNTdZZHJ1SHBsQWp1MmNObzFEb3JIM2oyN0J1NS1zX09QNVB3UGlobjVNIiwiYWxnIjoiUFMyNTYifQ.eyJhY2NvdW50X2lkIjozNzA2Mzc3OSwiYXBwX2lkIjo0LCJhdWQiOiJmci5jb3JlLmFwaSIsImNsaWVudF9pZCI6IndlYiIsImV4cCI6MTc3MzcwOTAwNywiaWF0IjoxNzczNzAxODA3LCJpc3MiOiJ2aW50ZWQtaWFtLXNlcnZpY2UiLCJsb2dpbl90eXBlIjozLCJwdXJwb3NlIjoiYWNjZXNzIiwic2NvcGUiOiJ1c2VyIiwic2lkIjoiMzk1YzI2M2ItMTc3MTU5NjQxMCIsInN1YiI6IjU1MzkyNDg2IiwiY2MiOiJGUiIsImFuaWQiOiJhYjIzZWRkYy0yYmI2LTQ0YzYtYTUyMS0yZTZjMGYzNWFlMGIiLCJhY3QiOnsic3ViIjoiNTUzOTI0ODYifX0.tKAHT_SHsH6i9oTayeu1fXBPcVLZgxYE4MfzB61UHLXGuJFa3QalIt2d0CmXx-TnYB49Bz6sX6npEIEHiHLQtK-MSfFkVPH5pFj4vzbkf53tjgGsgFI3zY2DP6nteGNhZ8BojLzdzWiSo-UGJYiR5sGJO6iLuV1Lv1m8jrg8AjmyuZy3e8OhzKrSRkhFjbLK14y9ujv4M977xqjcbu_uIjEU6vZ4Dw-2HO5JQ7IpjRydZgi5wySXC-KEziZaY6Zik6NnOmGWNNfr_RpobaF53XumlxruiAuo3XBmXZWlHfBFwpXP-BximMfe9H25DMq-EEd6HQm59twzG7N5S70SKA",
+    "session": "bzJra3QrcWFxbzMxRThzRmlJLzJhK3lmUVN1L3IxWWNWcjFNS0Nua0RQR05nREVOa2xnNGJNdUZ2YVpaU2JyRXptT3lVMUp5ck5qVHc0Mk55YXhYTTZEV2lNMkJRSkhtZ2NPNXFwL0I1TmNLQzhCZDc3YnlGNURNT0duemF4ZmwwNlk5S1dzaWFLYWZDdXhHa3hJdndVM2kzQyt5UXE0VHJ6alVEVm83ZFZZUERFVUF6RnBsZkQrQzJTZEdTbWZIZWhPanVXTy9UUlZkT0U1S09pTUZTOGlId3p1dVdDUjM3Y3BWRml1allna1FVMW5mZmJicjM2MVZsNkpQb1FmNk1VS0VTeTNyU0RidTRtK1pVOVB3ZGtLbDZFMHBsbmRSRnI0NStwc2Q0K050SGkzS2pzV1dUYlVJanFoN0lWcXotLVUxMWRWb0JHd3NTUzBRY2ZkWWNWNWc9PQ%3D%3D--34ee1cf1a40849e0b6030d755c1a5e7c3b611bad",
 }
 
 POINTS_RELAIS = [
@@ -108,7 +108,7 @@ def renouveler_access_token():
         response = requests.post(
             "https://www.vinted.fr/api/v2/tokens",
             json={"grant_type": "refresh_token", "refresh_token": VINTED_TOKENS["refresh_token"], "client_id": "web"},
-            headers=CHROME_HEADERS, timeout=10
+            headers=CHROME_HEADERS, timeout=15
         )
         if response.status_code == 200:
             data = response.json()
@@ -143,7 +143,7 @@ def creer_session_vinted():
     session = requests.Session()
     session.headers.update(CHROME_HEADERS)
     try:
-        session.get('https://www.vinted.fr', timeout=10)
+        session.get('https://www.vinted.fr', timeout=15)
         logger.info("Session Vinted créée")
     except Exception as e:
         logger.error(f"Erreur session: {e}")
@@ -186,7 +186,7 @@ def acheter_article(item_id, tentative=1):
         response = session.post(
             f"https://www.vinted.fr/api/v2/purchases/{item_id}/checkout",
             json={"components": {"item_presentation_escrow_v2": {}, "additional_service": {}, "payment_method": {}, "shipping_address": {}, "shipping_pickup_options": {}, "shipping_pickup_details": {}}},
-            timeout=10
+            timeout=15
         )
         if response.status_code == 401 and tentative == 1:
             if renouveler_access_token():
@@ -224,7 +224,7 @@ def acheter_article(item_id, tentative=1):
         response2 = session.patch(
             f"https://www.vinted.fr/api/v2/purchases/{purchase_id}/checkout",
             json={"components": {"shipping_pickup_options": {"pickup_type": 2}, "shipping_pickup_details": {"selected_rate_uuid": selected_rate_uuid, "shipping_point_uuid": point_uuid}}},
-            timeout=10
+            timeout=15
         )
         if response2.status_code not in [200, 201]:
             return False, f"Échec étape 2 (status {response2.status_code})"
@@ -238,7 +238,7 @@ def acheter_article(item_id, tentative=1):
         response3 = session.post(
             f"https://www.vinted.fr/api/v2/purchases/{purchase_id}/payment",
             json={"checksum": checksum, "payment_options": {"browser_info": {"language": "fr-FR", "color_depth": 32, "java_enabled": False, "screen_height": 956, "screen_width": 1470, "timezone_offset": -60}}},
-            timeout=10
+            timeout=15
         )
         if response3.status_code in [200, 201]:
             return True, f"Article acheté via {point_relais_nom}"
@@ -320,7 +320,7 @@ def chercher_par_brand_id(session, brand_id, prix_min=None, prix_max=None):
     if prix_min: params["price_from"] = prix_min
     if prix_max: params["price_to"] = prix_max
     try:
-        response = session.get("https://www.vinted.fr/api/v2/catalog/items", params=params, timeout=10)
+        response = session.get("https://www.vinted.fr/api/v2/catalog/items", params=params, timeout=15)
         if response.status_code == 200:
             return response.json().get("items", [])
         elif response.status_code == 429:
@@ -334,7 +334,7 @@ def chercher_par_user_id(session, user_id, prix_min=None, prix_max=None):
     if prix_min: params["price_from"] = prix_min
     if prix_max: params["price_to"] = prix_max
     try:
-        response = session.get("https://www.vinted.fr/api/v2/catalog/items", params=params, timeout=10)
+        response = session.get("https://www.vinted.fr/api/v2/catalog/items", params=params, timeout=15)
         if response.status_code == 200:
             return response.json().get("items", [])
         elif response.status_code == 429:
