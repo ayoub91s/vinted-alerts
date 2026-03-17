@@ -181,15 +181,19 @@ def get_vinted_scraper():
         if vinted_scraper_instance is None:
             proxy = get_proxy()
             logger.info(f"Init VintedScraper avec proxy {proxy.split('@')[1]}")
-            vinted_scraper_instance = VintedScraper(
-                "https://www.vinted.fr",
-                proxies={"http": proxy, "https": proxy}
-            )
+            # Configure le proxy via variable d'environnement
+            import os
+            os.environ["HTTP_PROXY"] = proxy
+            os.environ["HTTPS_PROXY"] = proxy
+            vinted_scraper_instance = VintedScraper("https://www.vinted.fr")
             logger.info("VintedScraper initialisé")
         return vinted_scraper_instance
     except Exception as e:
         logger.error(f"Erreur init VintedScraper: {e}")
         vinted_scraper_instance = None
+        import os
+        os.environ.pop("HTTP_PROXY", None)
+        os.environ.pop("HTTPS_PROXY", None)
         return None
 
 def creer_session_vinted():
