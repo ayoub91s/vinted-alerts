@@ -189,12 +189,23 @@ def choisir_point_relais(shipping_options_disponibles):
             return point
     return None
 
+def installer_playwright_si_necessaire():
+    import subprocess
+    import os
+    chrome_path = os.path.expanduser('~/.cache/ms-playwright')
+    if not os.path.exists(chrome_path) or not any('chromium' in d for d in os.listdir(chrome_path) if os.path.isdir(os.path.join(chrome_path, d))):
+        logger.info('Installation Chrome...')
+        subprocess.run(['python', '-m', 'playwright', 'install', 'chromium'], check=True)
+        subprocess.run(['python', '-m', 'playwright', 'install-deps', 'chromium'], check=True)
+        logger.info('Chrome installé')
+
 def acheter_article(item_id, tentative=1):
     """
     Achat automatique via Playwright (vrai navigateur Chrome).
     Contourne Cloudflare/DataDome complètement.
     """
     try:
+        installer_playwright_si_necessaire()
         from playwright.sync_api import sync_playwright
         logger.info(f"Lancement Chrome pour achat item {item_id}")
 
