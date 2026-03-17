@@ -239,9 +239,28 @@ def installer_playwright_si_necessaire():
         subprocess.run(['python', '-m', 'playwright', 'install-deps', 'chromium'], check=True)
         logger.info('Chrome installé')
 
+LOCAL_ACHAT_URL = "https://unsymmetrized-chiropodical-octavio.ngrok-free.dev"
+
 def acheter_article(item_id, tentative=1):
     """
-    Achat via API HTTP avec proxy résidentiel Webshare.
+    Achat via le serveur local sur ton Mac (IP personnelle).
+    """
+    try:
+        logger.info(f"Envoi demande achat item {item_id} au Mac local")
+        response = requests.post(
+            f"{LOCAL_ACHAT_URL}/acheter/{item_id}",
+            timeout=30
+        )
+        if response.status_code == 200:
+            data = response.json()
+            return data.get("succes", False), data.get("message", "Pas de message")
+        return False, f"Erreur serveur local (status {response.status_code})"
+    except Exception as e:
+        return False, f"Erreur connexion Mac local : {e}"
+
+def acheter_article_backup(item_id, tentative=1):
+    """
+    Backup — Achat via API HTTP avec proxy résidentiel Webshare.
     """
     proxy = get_proxy()
     proxies = {"http": proxy, "https": proxy}
