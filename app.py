@@ -261,17 +261,38 @@ def acheter_article(item_id, tentative=1):
                     page.wait_for_timeout(2000)
                     break
 
-            # Vérifie si l'achat est confirmé
+            # Attend et continue les étapes du checkout
             page.wait_for_timeout(3000)
+            
+            # Clique sur tous les boutons de continuation possibles
+            for btn_text in ["Continuer", "Suivant", "Confirmer", "Payer", "Commander", "Valider"]:
+                try:
+                    btn = page.locator(f"button:has-text('{btn_text}')").first
+                    if btn.is_visible(timeout=2000):
+                        btn.click()
+                        logger.info(f"Bouton '{btn_text}' cliqué")
+                        page.wait_for_timeout(2000)
+                except:
+                    pass
+
+            # Attend la confirmation finale
+            page.wait_for_timeout(5000)
             url_finale = page.url
             contenu = page.content()
+            
+            # Prend un screenshot pour debug
+            screenshot = page.screenshot()
+            import base64
+            screenshot_b64 = base64.b64encode(screenshot).decode()
+            logger.info(f"URL finale: {url_finale}")
+            logger.info(f"Contenu (500 chars): {contenu[:500]}")
 
             browser.close()
 
-            if "confirmation" in url_finale or "success" in url_finale or "merci" in contenu.lower() or "commandé" in contenu.lower():
+            if any(x in url_finale for x in ["confirmation", "success", "merci", "order", "commande"]) or any(x in contenu.lower() for x in ["commandé", "confirmation", "merci", "félicitations", "votre achat"]):
                 return True, "Article acheté via navigateur automatique"
             else:
-                return False, f"Achat non confirmé — URL: {url_finale[:100]}"
+                return False, f"Achat non confirmé — URL: {url_finale}"
 
     except Exception as e:
         logger.error(f"Erreur Playwright : {e}")
