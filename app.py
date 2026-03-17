@@ -151,14 +151,40 @@ def creer_session_authentifiee():
     logger.info("Session authentifiée créée")
     return session
 
-# VintedScraper gère les cookies automatiquement
+# Proxies Webshare résidentiels
+WEBSHARE_PROXIES = [
+    {"ip": "31.59.20.176", "port": "6754"},
+    {"ip": "23.95.150.145", "port": "6114"},
+    {"ip": "198.23.239.134", "port": "6540"},
+    {"ip": "45.38.107.97", "port": "6014"},
+    {"ip": "107.172.163.27", "port": "6543"},
+    {"ip": "198.105.121.200", "port": "6462"},
+    {"ip": "64.137.96.74", "port": "6641"},
+]
+WEBSHARE_USER = "xnhxmhza"
+WEBSHARE_PASS = "jh4ybh3tobea"
+
+proxy_index = 0
+
+def get_proxy():
+    global proxy_index
+    p = WEBSHARE_PROXIES[proxy_index % len(WEBSHARE_PROXIES)]
+    proxy_index += 1
+    return f"http://{WEBSHARE_USER}:{WEBSHARE_PASS}@{p['ip']}:{p['port']}"
+
+# VintedScraper avec proxy
 vinted_scraper_instance = None
 
 def get_vinted_scraper():
     global vinted_scraper_instance
     try:
         if vinted_scraper_instance is None:
-            vinted_scraper_instance = VintedScraper("https://www.vinted.fr")
+            proxy = get_proxy()
+            logger.info(f"Init VintedScraper avec proxy {proxy.split('@')[1]}")
+            vinted_scraper_instance = VintedScraper(
+                "https://www.vinted.fr",
+                proxies={"http": proxy, "https": proxy}
+            )
             logger.info("VintedScraper initialisé")
         return vinted_scraper_instance
     except Exception as e:
@@ -167,7 +193,6 @@ def get_vinted_scraper():
         return None
 
 def creer_session_vinted():
-    # Gardé pour compatibilité mais on utilise VintedScraper maintenant
     return get_vinted_scraper()
 
 # ============================================
@@ -419,7 +444,7 @@ def chercher_par_brand_id(session, brand_id, prix_min=None, prix_max=None):
     except Exception as e:
         logger.error(f"Erreur brand_id {brand_id}: {e}")
         global vinted_scraper_instance
-        vinted_scraper_instance = None  # Force reinit
+        vinted_scraper_instance = None  # Change proxy au prochain appel
         return []
 
 def chercher_par_user_id(session, user_id, prix_min=None, prix_max=None):
@@ -435,7 +460,7 @@ def chercher_par_user_id(session, user_id, prix_min=None, prix_max=None):
     except Exception as e:
         logger.error(f"Erreur user_id {user_id}: {e}")
         global vinted_scraper_instance
-        vinted_scraper_instance = None
+        vinted_scraper_instance = None  # Change proxy au prochain appel
         return []
 
 # ============================================
