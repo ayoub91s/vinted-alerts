@@ -4,7 +4,9 @@ import logging
 import os
 import json
 import psycopg2
+import asyncio
 from datetime import datetime
+from vinted_scraper import VintedScraper
 
 TELEGRAM_TOKEN = "8142414797:AAHW8tNIsrncPLNsruNO0aZUbspto7Nj2Ys"
 TELEGRAM_CHAT_ID = "5741568179"
@@ -149,15 +151,24 @@ def creer_session_authentifiee():
     logger.info("Session authentifiée créée")
     return session
 
-def creer_session_vinted():
-    session = requests.Session()
-    session.headers.update(CHROME_HEADERS)
+# VintedScraper gère les cookies automatiquement
+vinted_scraper_instance = None
+
+def get_vinted_scraper():
+    global vinted_scraper_instance
     try:
-        session.get('https://www.vinted.fr', timeout=15)
-        logger.info("Session Vinted créée")
+        if vinted_scraper_instance is None:
+            vinted_scraper_instance = VintedScraper("https://www.vinted.fr")
+            logger.info("VintedScraper initialisé")
+        return vinted_scraper_instance
     except Exception as e:
-        logger.error(f"Erreur session: {e}")
-    return session
+        logger.error(f"Erreur init VintedScraper: {e}")
+        vinted_scraper_instance = None
+        return None
+
+def creer_session_vinted():
+    # Gardé pour compatibilité mais on utilise VintedScraper maintenant
+    return get_vinted_scraper()
 
 # ============================================
 # TELEGRAM
@@ -241,12 +252,40 @@ def acheter_article(item_id, tentative=1):
             page.goto(f"https://www.vinted.fr/items/{item_id}", wait_until="domcontentloaded", timeout=30000)
             page.wait_for_timeout(2000)
 
-            # Clique sur le bouton Acheter
+            # Log tous les boutons visibles sur la page
             logger.info("Recherche bouton Acheter")
-            buy_btn = page.locator("button:has-text('Acheter')").first
-            if not buy_btn.is_visible():
+            try:
+                buttons = page.locator("button").all()
+                btn_texts = [b.inner_text() for b in buttons if b.is_visible()]
+                logger.info(f"Boutons visibles: {btn_texts}")
+            except:
+                pass
+
+            # Essaie plusieurs textes possibles
+            buy_btn = None
+            for txt in ["Acheter", "Acheter maintenant", "Buy", "Acquérir", "Commander"]:
+                try:
+                    btn = page.locator(f"button:has-text('{txt}')").first
+                    if btn.is_visible(timeout=2000):
+                        buy_btn = btn
+                        logger.info(f"Bouton trouvé: {txt}")
+                        break
+                except:
+                    pass
+
+            if not buy_btn:
+                # Essaie un sélecteur plus large
+                try:
+                    buy_btn = page.locator("[data-testid*='buy'], [data-testid*='purchase'], [data-testid*='checkout']").first
+                    if not buy_btn.is_visible(timeout=2000):
+                        buy_btn = None
+                except:
+                    buy_btn = None
+
+            if not buy_btn:
+                url = page.url
                 browser.close()
-                return False, "Bouton Acheter introuvable sur la page"
+                return False, f"Bouton Acheter introuvable — URL: {url}"
 
             buy_btn.click()
             logger.info("Bouton Acheter cliqué")
@@ -368,52 +407,78 @@ def verifier_callbacks_telegram():
 # ============================================
 
 def chercher_par_brand_id(session, brand_id, prix_min=None, prix_max=None):
-    params = {'brand_ids[]': brand_id, 'order': 'newest_first', 'per_page': 20}
-    if prix_min: params["price_from"] = prix_min
-    if prix_max: params["price_to"] = prix_max
     try:
-        response = session.get("https://www.vinted.fr/api/v2/catalog/items", params=params, timeout=15)
-        if response.status_code == 200:
-            return response.json().get("items", [])
-        elif response.status_code == 429:
-            time.sleep(60)
+        scraper = get_vinted_scraper()
+        if not scraper:
+            return []
+        params = {"brand_ids[]": brand_id, "order": "newest_first", "per_page": 20}
+        if prix_min: params["price_from"] = prix_min
+        if prix_max: params["price_to"] = prix_max
+        items = scraper.search(params)
+        return [item.__dict__ if hasattr(item, "__dict__") else item for item in items] if items else []
     except Exception as e:
-        logger.error(f"Erreur réseau brand_id {brand_id}: {e}")
-    return []
+        logger.error(f"Erreur brand_id {brand_id}: {e}")
+        global vinted_scraper_instance
+        vinted_scraper_instance = None  # Force reinit
+        return []
 
 def chercher_par_user_id(session, user_id, prix_min=None, prix_max=None):
-    params = {'user_ids[]': user_id, 'order': 'newest_first', 'per_page': 20}
-    if prix_min: params["price_from"] = prix_min
-    if prix_max: params["price_to"] = prix_max
     try:
-        response = session.get("https://www.vinted.fr/api/v2/catalog/items", params=params, timeout=15)
-        if response.status_code == 200:
-            return response.json().get("items", [])
-        elif response.status_code == 429:
-            time.sleep(60)
+        scraper = get_vinted_scraper()
+        if not scraper:
+            return []
+        params = {"user_ids[]": user_id, "order": "newest_first", "per_page": 20}
+        if prix_min: params["price_from"] = prix_min
+        if prix_max: params["price_to"] = prix_max
+        items = scraper.search(params)
+        return [item.__dict__ if hasattr(item, "__dict__") else item for item in items] if items else []
     except Exception as e:
-        logger.error(f"Erreur réseau user_id {user_id}: {e}")
-    return []
+        logger.error(f"Erreur user_id {user_id}: {e}")
+        global vinted_scraper_instance
+        vinted_scraper_instance = None
+        return []
 
 # ============================================
 # FORMATAGE
 # ============================================
 
+def get_val(article, *keys, default=""):
+    for key in keys:
+        val = article.get(key) if isinstance(article, dict) else getattr(article, key, None)
+        if val is not None:
+            return val
+    return default
+
 def formater_article(article, nom_alerte):
-    titre = article.get("title", "")
-    prix = str(article.get("price", {}).get("amount", "?"))
-    vid = str(article.get("id"))
+    # Compatible dict (API directe) et objet (vinted-scraper)
+    titre = get_val(article, "title", default="")
+    vid = str(get_val(article, "id", default="0"))
     lien = f"https://www.vinted.fr/items/{vid}"
-    photos = article.get("photos", [])
+
+    prix_raw = get_val(article, "price", default="?")
+    if isinstance(prix_raw, dict):
+        prix = str(prix_raw.get("amount", "?"))
+    elif hasattr(prix_raw, "amount"):
+        prix = str(prix_raw.amount)
+    else:
+        prix = str(prix_raw) if prix_raw else "?"
+
     photo_url = ""
-    if photos:
-        thumbnails = photos[0].get("thumbnails", [])
-        for thumb in thumbnails:
-            if thumb.get("width") == 310:
-                photo_url = thumb.get("url", "")
-                break
-        if not photo_url:
-            photo_url = photos[0].get("url", "")
+    photos_raw = get_val(article, "photos", default=[])
+    if photos_raw:
+        p = photos_raw[0]
+        if isinstance(p, dict):
+            for thumb in p.get("thumbnails", []):
+                if isinstance(thumb, dict) and thumb.get("width") == 310:
+                    photo_url = thumb.get("url", "")
+                    break
+            if not photo_url:
+                photo_url = p.get("url", "")
+        else:
+            photo_url = getattr(p, "url", "") or getattr(p, "full_size_url", "")
+    if not photo_url:
+        direct = get_val(article, "photo", "image_url", "thumbnail", default="")
+        photo_url = getattr(direct, "url", direct) if direct else ""
 
     message = f"🎯 <b>{nom_alerte}</b>\n\n{titre}\n💰 {prix}€\n\n{lien}"
     reply_markup = {"inline_keyboard": [[{"text": "🛒 Acheter", "callback_data": f"acheter_{vid}"}, {"text": "👁 Voir", "url": lien}]]}
