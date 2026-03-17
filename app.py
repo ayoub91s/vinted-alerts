@@ -282,19 +282,17 @@ def acheter_article(item_id, tentative=1):
 
             page = context.new_page()
 
-            # D'abord charge la page principale pour établir la session
-            logger.info("Chargement page principale Vinted")
-            page.goto("https://www.vinted.fr", wait_until="domcontentloaded", timeout=30000)
-            page.wait_for_timeout(2000)
-
-            # Ouvre la page de l'article
+            # Ouvre directement la page article
             logger.info(f"Ouverture page article {item_id}")
             page.goto(f"https://www.vinted.fr/items/{item_id}", wait_until="networkidle", timeout=45000)
-            page.wait_for_timeout(4000)
+            page.wait_for_timeout(5000)
             
-            # Log le titre de la page pour debug
             logger.info(f"Titre page: {page.title()}")
             logger.info(f"URL: {page.url}")
+            
+            # Log le HTML pour debug
+            body_text = page.locator("body").inner_text()[:300]
+            logger.info(f"Contenu page: {body_text}")
 
             # Log tous les boutons visibles sur la page
             logger.info("Recherche bouton Acheter")
