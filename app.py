@@ -250,6 +250,7 @@ def acheter_article(item_id, tentative=1):
         logger.info(f"Lancement Chrome pour achat item {item_id}")
 
         with sync_playwright() as p:
+            proxy = get_proxy()
             browser = p.chromium.launch(
                 headless=True,
                 args=[
@@ -257,7 +258,12 @@ def acheter_article(item_id, tentative=1):
                     "--disable-setuid-sandbox",
                     "--disable-dev-shm-usage",
                     "--disable-gpu",
-                ]
+                ],
+                proxy={
+                    "server": f"http://{proxy.split('@')[1]}",
+                    "username": WEBSHARE_USER,
+                    "password": WEBSHARE_PASS,
+                }
             )
             context = browser.new_context(
                 viewport={"width": 1280, "height": 720},
