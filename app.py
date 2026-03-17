@@ -289,11 +289,12 @@ def acheter_article(item_id, tentative=1):
 
             # Ouvre la page de l'article
             logger.info(f"Ouverture page article {item_id}")
-            page.goto(f"https://www.vinted.fr/items/{item_id}", wait_until="domcontentloaded", timeout=30000)
-            page.wait_for_timeout(3000)
+            page.goto(f"https://www.vinted.fr/items/{item_id}", wait_until="networkidle", timeout=45000)
+            page.wait_for_timeout(4000)
             
             # Log le titre de la page pour debug
             logger.info(f"Titre page: {page.title()}")
+            logger.info(f"URL: {page.url}")
 
             # Log tous les boutons visibles sur la page
             logger.info("Recherche bouton Acheter")
