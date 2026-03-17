@@ -241,143 +241,97 @@ def installer_playwright_si_necessaire():
 
 def acheter_article(item_id, tentative=1):
     """
-    Achat automatique via Playwright (vrai navigateur Chrome).
-    Contourne Cloudflare/DataDome complètement.
+    Achat via API HTTP avec proxy résidentiel Webshare.
     """
+    proxy = get_proxy()
+    proxies = {"http": proxy, "https": proxy}
+    
+    session = requests.Session()
+    session.headers.update(CHROME_HEADERS)
+    session.headers.update({
+        "Authorization": f"Bearer {VINTED_TOKENS['access_token']}",
+        "X-Requested-With": "XMLHttpRequest",
+    })
+    session.cookies.set("access_token_web", VINTED_TOKENS["access_token"], domain=".vinted.fr")
+    session.cookies.set("refresh_token_web", VINTED_TOKENS["refresh_token"], domain=".vinted.fr")
+    session.cookies.set("_vinted_fr_session", VINTED_TOKENS["session"], domain=".vinted.fr")
+    session.cookies.set("cf_clearance", VINTED_TOKENS["cf_clearance"], domain=".vinted.fr")
+    session.cookies.set("datadome", VINTED_TOKENS["datadome"], domain=".vinted.fr")
+
     try:
-        installer_playwright_si_necessaire()
-        from playwright.sync_api import sync_playwright
-        logger.info(f"Lancement Chrome pour achat item {item_id}")
-
-        with sync_playwright() as p:
-            proxy = get_proxy()
-            browser = p.chromium.launch(
-                headless=True,
-                args=[
-                    "--no-sandbox",
-                    "--disable-setuid-sandbox",
-                    "--disable-dev-shm-usage",
-                    "--disable-gpu",
-                ],
-                proxy={
-                    "server": f"http://{proxy.split('@')[1]}",
-                    "username": WEBSHARE_USER,
-                    "password": WEBSHARE_PASS,
-                }
-            )
-            context = browser.new_context(
-                viewport={"width": 1280, "height": 720},
-                user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                locale="fr-FR",
-            )
-
-            # Injecter les cookies de session
-            context.add_cookies([
-                {"name": "access_token_web", "value": VINTED_TOKENS["access_token"], "domain": ".vinted.fr", "path": "/"},
-                {"name": "refresh_token_web", "value": VINTED_TOKENS["refresh_token"], "domain": ".vinted.fr", "path": "/"},
-                {"name": "_vinted_fr_session", "value": VINTED_TOKENS["session"], "domain": ".vinted.fr", "path": "/"},
-                {"name": "cf_clearance", "value": VINTED_TOKENS["cf_clearance"], "domain": ".vinted.fr", "path": "/"},
-                {"name": "datadome", "value": VINTED_TOKENS["datadome"], "domain": ".vinted.fr", "path": "/"},
-            ])
-
-            page = context.new_page()
-
-            # Ouvre directement la page article
-            logger.info(f"Ouverture page article {item_id}")
-            page.goto(f"https://www.vinted.fr/items/{item_id}", wait_until="networkidle", timeout=45000)
-            page.wait_for_timeout(5000)
-            
-            logger.info(f"Titre page: {page.title()}")
-            logger.info(f"URL: {page.url}")
-            
-            # Log le HTML pour debug
-            body_text = page.locator("body").inner_text()[:300]
-            logger.info(f"Contenu page: {body_text}")
-
-            # Log tous les boutons visibles sur la page
-            logger.info("Recherche bouton Acheter")
-            try:
-                buttons = page.locator("button").all()
-                btn_texts = [b.inner_text() for b in buttons if b.is_visible()]
-                logger.info(f"Boutons visibles: {btn_texts}")
-            except:
-                pass
-
-            # Essaie plusieurs textes possibles
-            buy_btn = None
-            for txt in ["Acheter", "Acheter maintenant", "Buy", "Acquérir", "Commander"]:
-                try:
-                    btn = page.locator(f"button:has-text('{txt}')").first
-                    if btn.is_visible(timeout=2000):
-                        buy_btn = btn
-                        logger.info(f"Bouton trouvé: {txt}")
-                        break
-                except:
-                    pass
-
-            if not buy_btn:
-                # Essaie un sélecteur plus large
-                try:
-                    buy_btn = page.locator("[data-testid*='buy'], [data-testid*='purchase'], [data-testid*='checkout']").first
-                    if not buy_btn.is_visible(timeout=2000):
-                        buy_btn = None
-                except:
-                    buy_btn = None
-
-            if not buy_btn:
-                url = page.url
-                browser.close()
-                return False, f"Bouton Acheter introuvable — URL: {url}"
-
-            buy_btn.click()
-            logger.info("Bouton Acheter cliqué")
-            page.wait_for_timeout(2000)
-
-            # Cherche et clique sur Continuer/Suivant
-            for btn_text in ["Continuer", "Suivant", "Confirmer", "Payer"]:
-                btn = page.locator(f"button:has-text('{btn_text}')").first
-                if btn.is_visible():
-                    btn.click()
-                    logger.info(f"Bouton '{btn_text}' cliqué")
-                    page.wait_for_timeout(2000)
-                    break
-
-            # Attend et continue les étapes du checkout
-            page.wait_for_timeout(3000)
-            
-            # Clique sur tous les boutons de continuation possibles
-            for btn_text in ["Continuer", "Suivant", "Confirmer", "Payer", "Commander", "Valider"]:
-                try:
-                    btn = page.locator(f"button:has-text('{btn_text}')").first
-                    if btn.is_visible(timeout=2000):
-                        btn.click()
-                        logger.info(f"Bouton '{btn_text}' cliqué")
-                        page.wait_for_timeout(2000)
-                except:
-                    pass
-
-            # Attend la confirmation finale
-            page.wait_for_timeout(5000)
-            url_finale = page.url
-            contenu = page.content()
-            
-            # Prend un screenshot pour debug
-            screenshot = page.screenshot()
-            import base64
-            screenshot_b64 = base64.b64encode(screenshot).decode()
-            logger.info(f"URL finale: {url_finale}")
-            logger.info(f"Contenu (500 chars): {contenu[:500]}")
-
-            browser.close()
-
-            if any(x in url_finale for x in ["confirmation", "success", "merci", "order", "commande"]) or any(x in contenu.lower() for x in ["commandé", "confirmation", "merci", "félicitations", "votre achat"]):
-                return True, "Article acheté via navigateur automatique"
-            else:
-                return False, f"Achat non confirmé — URL: {url_finale}"
-
+        logger.info(f"Étape 1 : Checkout item {item_id} via proxy {proxy.split('@')[1]}")
+        response = session.post(
+            f"https://www.vinted.fr/api/v2/purchases/{item_id}/checkout",
+            json={"components": {"item_presentation_escrow_v2": {}, "additional_service": {}, "payment_method": {}, "shipping_address": {}, "shipping_pickup_options": {}, "shipping_pickup_details": {}}},
+            proxies=proxies,
+            timeout=20
+        )
+        logger.info(f"Étape 1 status: {response.status_code}")
+        
+        if response.status_code == 401 and tentative == 1:
+            if renouveler_access_token():
+                return acheter_article(item_id, tentative=2)
+            return False, "Token expiré"
+        if response.status_code not in [200, 201]:
+            return False, f"Échec étape 1 (status {response.status_code}) : {response.text[:200]}"
+        
+        data = response.json()
+        checkout = data.get("checkout", {})
+        purchase_id = checkout.get("id")
+        if not purchase_id:
+            return False, "Impossible de récupérer le purchase_id"
+        logger.info(f"Purchase ID: {purchase_id}")
     except Exception as e:
-        logger.error(f"Erreur Playwright : {e}")
-        return False, f"Erreur navigateur : {e}"
+        return False, f"Erreur étape 1 : {e}"
+
+    try:
+        pickup_types = checkout.get("components", {}).get("shipping_pickup_details", {}).get("pickup_types", {})
+        pickup_options = pickup_types.get("pickup", {}).get("shipping_options", [])
+        if not pickup_options:
+            pickup_option = checkout.get("components", {}).get("shipping_pickup_options", {})
+            selected_rate_uuid = pickup_option.get("pickup_options", {}).get("pickup", {}).get("selected_rate_uuid")
+            point_uuid = pickup_option.get("pickup_options", {}).get("pickup", {}).get("shipping_point", {}).get("uuid")
+            point_relais_nom = "point relais par défaut"
+        else:
+            point = choisir_point_relais(pickup_options)
+            if point:
+                selected_rate_uuid = point["rate_uuid"]
+                point_uuid = point["uuid"]
+                point_relais_nom = point["nom"]
+            else:
+                selected_rate_uuid = pickup_options[0].get("rate_uuid")
+                point_uuid = checkout.get("components", {}).get("shipping_pickup_options", {}).get("pickup_options", {}).get("pickup", {}).get("shipping_point", {}).get("uuid")
+                point_relais_nom = "première option disponible"
+
+        response2 = session.patch(
+            f"https://www.vinted.fr/api/v2/purchases/{purchase_id}/checkout",
+            json={"components": {"shipping_pickup_options": {"pickup_type": 2}, "shipping_pickup_details": {"selected_rate_uuid": selected_rate_uuid, "shipping_point_uuid": point_uuid}}},
+            proxies=proxies,
+            timeout=20
+        )
+        logger.info(f"Étape 2 status: {response2.status_code}")
+        if response2.status_code not in [200, 201]:
+            return False, f"Échec étape 2 (status {response2.status_code}) : {response2.text[:200]}"
+        checksum = response2.json().get("checkout", {}).get("checksum")
+        if not checksum:
+            return False, "Impossible de récupérer le checksum"
+    except Exception as e:
+        return False, f"Erreur étape 2 : {e}"
+
+    try:
+        response3 = session.post(
+            f"https://www.vinted.fr/api/v2/purchases/{purchase_id}/payment",
+            json={"checksum": checksum, "payment_options": {"browser_info": {"language": "fr-FR", "color_depth": 32, "java_enabled": False, "screen_height": 956, "screen_width": 1470, "timezone_offset": -60}}},
+            proxies=proxies,
+            timeout=20
+        )
+        logger.info(f"Étape 3 status: {response3.status_code}")
+        if response3.status_code in [200, 201]:
+            return True, f"Article acheté via {point_relais_nom}"
+        return False, f"Échec paiement (status {response3.status_code}) : {response3.text[:200]}"
+    except Exception as e:
+        return False, f"Erreur étape 3 : {e}"
+
 
 def traiter_callback_achat(item_id):
     envoyer_telegram(f"⏳ Achat en cours pour l'article {item_id}...")
