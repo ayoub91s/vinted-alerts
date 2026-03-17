@@ -17,7 +17,7 @@ ALERTES = [
     {"nom": "Rick Owens", "brand_id": 145654, "prix_min": None, "prix_max": None},
     {"nom": "Ann Demeulemeester", "brand_id": 51445, "prix_min": None, "prix_max": None},
     {"nom": "Isaac Sellam", "brand_id": 393343, "prix_min": None, "prix_max": None},
-    {"nom": "Mon profil", "user_id": 3142336781, "prix_min": None, "prix_max": None},
+    {"nom": "Mon profil", "user_id": 160573709, "prix_min": None, "prix_max": None},
 ]
 
 VINTED_TOKENS = {
