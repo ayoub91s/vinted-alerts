@@ -489,9 +489,15 @@ def formater_article(article, nom_alerte):
 # ============================================
 
 def cross_check_et_notifier(article, nom_alerte_source):
-    brand_id_article = article.get("brand_id")
-    user_id_article = article.get("user", {}).get("id")
-    vid = str(article.get("id"))
+    brand_id_article = get_val(article, "brand_id", default=None)
+    user_raw = get_val(article, "user", default=None)
+    if isinstance(user_raw, dict):
+        user_id_article = user_raw.get("id")
+    elif user_raw is not None:
+        user_id_article = getattr(user_raw, "id", None)
+    else:
+        user_id_article = None
+    vid = str(get_val(article, "id", default="0"))
     for alerte in ALERTES:
         nom = alerte["nom"]
         if nom == nom_alerte_source:
@@ -508,7 +514,7 @@ def cross_check_et_notifier(article, nom_alerte_source):
 
 def traiter_articles(articles, nom_alerte):
     for article in articles:
-        vid = str(article.get("id"))
+        vid = str(get_val(article, "id", default="0"))
         if article_deja_vu(vid, nom_alerte):
             continue
         infos = formater_article(article, nom_alerte)
