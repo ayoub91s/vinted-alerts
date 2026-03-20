@@ -19,14 +19,12 @@ ALERTES = [
     {"nom": "Mon profil", "user_id": 160573709, "prix_min": None, "prix_max": None},
 ]
 
-# Tokens Vinted — a renouveler manuellement depuis Chrome DevTools si expires
-# (DevTools -> Application -> Cookies -> vinted.fr)
 VINTED_TOKENS = {
-    "refresh_token": "eyJraWQiOiJFNTdZZHJ1SHBsQWp1MmNObzFEb3JIM2oyN0J1NS1zX09QNVB3UGlobjVNIiwiYWxnIjoiUFMyNTYifQ.eyJhY2NvdW50X2lkIjozNzA2Mzc3OSwiYXBwX2lkIjo0LCJhdWQiOiJmci5jb3JlLmFwaSIsImNsaWVudF9pZCI6IndlYiIsImV4cCI6MTc3NDMwNjYwNywiaWF0IjoxNzczNzAxODA3LCJpc3MiOiJ2aW50ZWQtaWFtLXNlcnZpY2UiLCJsb2dpbl90eXBlIjozLCJwdXJwb3NlIjoicmVmcmVzaCIsInNjb3BlIjoidXNlciIsInNpZCI6IjM5NWMyNjNiLTE3NzE1OTY0MTAiLCJzdWIiOiI1NTM5MjQ4NiIsImNjIjoiRlIiLCJhbmlkIjoiYWIyM2VkZGMtMmJiNi00NGM2LWE1MjEtMmU2YzBmMzVhZTBiIiwiYWN0Ijp7InN1YiI6IjU1MzkyNDg2In19.HcmY3o4lqKNd1Uh4kwyyjOwfI2e0lcxYNRzFgimBN9HhtXmTDTRVuB9fdIurH2X1cXzQelbfeuoJspcN7yYkMiKrfnntBn-Ts3Ii2GsNBt58DCCklV96j0XiZv3szV7WUbEPs2TpCRkgaVBk0HyvFf4R5ld_PVc6FFzzFCQyR6N2vQSsR3jOldjJqyG8rbLnham6RHNYpqpEeqlw1kozoC2YeqYsC5-K4lteT3YIqcFmL_rS6dPK0AGLcqnrIvwpRpZ0M4vxTwK9Hhq1iW0T3jR-Pm62D5BevsbDz0b6wuYLGXYTX0eK4IG1ZnsL3ao8ccXzk_v0u3WOPsiNGU-79Q",
-    "access_token": "eyJraWQiOiJFNTdZZHJ1SHBsQWp1MmNObzFEb3JIM2oyN0J1NS1zX09QNVB3UGlobjVNIiwiYWxnIjoiUFMyNTYifQ.eyJhY2NvdW50X2lkIjozNzA2Mzc3OSwiYXBwX2lkIjo0LCJhdWQiOiJmci5jb3JlLmFwaSIsImNsaWVudF9pZCI6IndlYiIsImV4cCI6MTc3MzcwOTAwNywiaWF0IjoxNzczNzAxODA3LCJpc3MiOiJ2aW50ZWQtaWFtLXNlcnZpY2UiLCJsb2dpbl90eXBlIjozLCJwdXJwb3NlIjoiYWNjZXNzIiwic2NvcGUiOiJ1c2VyIiwic2lkIjoiMzk1YzI2M2ItMTc3MTU5NjQxMCIsInN1YiI6IjU1MzkyNDg2IiwiY2MiOiJGUiIsImFuaWQiOiJhYjIzZWRkYy0yYmI2LTQ0YzYtYTUyMS0yZTZjMGYzNWFlMGIiLCJhY3QiOnsic3ViIjoiNTUzOTI0ODYifX0.tKAHT_SHsH6i9oTayeu1fXBPcVLZgxYE4MfzB61UHLXGuJFa3QalIt2d0CmXx-TnYB49Bz6sX6npEIEHiHLQtK-MSfFkVPH5pFj4vzbkf53tjgGsgFI3zY2DP6nteGNhZ8BojLzdzWiSo-UGJYiR5sGJO6iLuV1Lv1m8jrg8AjmyuZy3e8OhzKrSRkhFjbLK14y9ujv4M977xqjcbu_uIjEU6vZ4Dw-2HO5JQ7IpjRydZgi5wySXC-KEziZaY6Zik6NnOmGWNNfr_RpobaF53XumlxruiAuo3XBmXZWlHfBFwpXP-BximMfe9H25DMq-EEd6HQm59twzG7N5S70SKA",
-    "session": "bzJra3QrcWFxbzMxRThzRmlJLzJhK3lmUVN1L3IxWWNWcjFNS0Nua0RQR05nREVOa2xnNGJNdUZ2YVpaU2JyRXptT3lVMUp5ck5qVHc0Mk55YXhYTTZEV2lNMkJRSkhtZ2NPNXFwL0I1TmNLQzhCZDc3YnlGNURNT0duemF4ZmwwNlk5S1dzaWFLYWZDdXhHa3hJdndVM2kzQyt5UXE0VHJ6alVEVm83ZFZZUURFVUF6RnBsZkQrQzJTZEdTbWZIZWhPanVXTy9UUlZkT0U1S09pTUZTOGlId3p1dVdDUjM3Y3BWRml1allna1FVMW5mZmJicjM2MVZsNkpQb1FmNk1VS0VTeTNyU0RidTRtK1pVOVB3ZGtLbDZFMHBsbmRSRnI0NStwc2Q0K050SGkzS2pzV1dUYlVJanFoN0lWcXotLVUxMWRWb0JHd3NTUzBRY2ZkWWNWNWc9PQ==--34ee1cf1a40849e0b6030d755c1a5e7c3b611bad",
-    "cf_clearance": "lvykSBBuDeKGIbmJcs.iczqn3q7TacwVU1t2phgn40k-1773701809-1.2.1.1-2occXASM7dbPcxy0oTt5SLvijaQVB4T.loFDKsI6EgdOnIyVP7bOm1E99ygL5YKB0TMu9XuaQ4t3HvMlLv5tzt5gIIvKdUqtqV_zYudiFkS2yWZKczvNS2LT4b9lUPkTJMFL4OVLRzRiC3xnlvJJsWhqSOPmAfHncIbTxX4Gpz05nber0udkU3nfQK.kyIYoWoSNQNkdAr8_0tvcNHuJ3ZuIpanP.MbSM.imU0NwgS4",
-    "datadome": "X~gxBVEY9zRGHL3kdw1ljeqt_Ou01M1cAwt~q4RX9s_8NHZsa3FSm8pCtEpF5jrhTi~nYiwiEtrgD7N_whYbLVH_u0V1N4aoKjkp6mvFHuQ4mnyG47llU7Jm899igbXb",
+    "access_token": "eyJraWQiOiJFNTdZZHJ1SHBsQWp1MmNObzFEb3JIM2oyN0J1NS1zX09QNVB3UGlobjVNIiwiYWxnIjoiUFMyNTYifQ.eyJhY2NvdW50X2lkIjozNzA2Mzc3OSwiYXBwX2lkIjo0LCJhdWQiOiJmci5jb3JlLmFwaSIsImNsaWVudF9pZCI6IndlYiIsImV4cCI6MTc3NDA1NzA4MywiaWF0IjoxNzc0MDQ5ODgzLCJpc3MiOiJ2aW50ZWQtaWFtLXNlcnZpY2UiLCJsb2dpbl90eXBlIjozLCJwdXJwb3NlIjoiYWNjZXNzIiwic2NvcGUiOiJ1c2VyIiwic2lkIjoiYzBiZGM0NzYtMTc3Mzc4MTE1OCIsInN1YiI6IjU1MzkyNDg2IiwiY2MiOiJGUiIsImFuaWQiOiJhYjIzZWRkYy0yYmI2LTQ0YzYtYTUyMS0yZTZjMGYzNWFlMGIiLCJhY3QiOnsic3ViIjoiNTUzOTI0ODYifX0.RcCK7wBVR17tpA-U0o5XsFz282yX_GmN9y_ECC98061m2wxmSfJAJYhK0J57IQM0Ca7mPrnCwZ00ajY0q1eiFMhtUUs1l951CJPezzWIJi10f4v_mEPiVhABBnmwaYvqmxyuaPPp-E1E7OJ_FhKaClxN-SlcuMNjkK8QC9XLcrRF-8ZpKdhhl1ed5A7oODtpW-12CMezsjC8CNFIs0TpBk5NlBPPvOnNfC0CQYGFyVQJ0qrPmLA2M4O4ihIb9kPen54G5v9x6eXyLtOLqvoMdX_vakPdx2fR-ufsr7a85y9TQaQVNleS3XvSFC6dPzpb0BHZobehw-X1ZHquw02u8g",
+    "refresh_token": "eyJraWQiOiJFNTdZZHJ1SHBsQWp1MmNObzFEb3JIM2oyN0J1NS1zX09QNVB3UGlobjVNIiwiYWxnIjoiUFMyNTYifQ.eyJhY2NvdW50X2lkIjozNzA2Mzc3OSwiYXBwX2lkIjo0LCJhdWQiOiJmci5jb3JlLmFwaSIsImNsaWVudF9pZCI6IndlYiIsImV4cCI6MTc3NDY1NDY4MywiaWF0IjoxNzc0MDQ5ODgzLCJpc3MiOiJ2aW50ZWQtaWFtLXNlcnZpY2UiLCJsb2dpbl90eXBlIjozLCJwdXJwb3NlIjoicmVmcmVzaCIsInNjb3BlIjoidXNlciIsInNpZCI6ImMwYmRjNDc2LTE3NzM3ODExNTgiLCJzdWIiOiI1NTM5MjQ4NiIsImNjIjoiRlIiLCJhbmlkIjoiYWIyM2VkZGMtMmJiNi00NGM2LWE1MjEtMmU2YzBmMzVhZTBiIiwiYWN0Ijp7InN1YiI6IjU1MzkyNDg2In19.BrA3EnEbjziyCI2_QSfbs1NQcCewP2RZ18K_attmUQfJn9Q6tJe00MeI6BLN9lJMaq_-FTHOqFRyS0HfYa5YAKtSNbqm9pLM4erwr60xcnk_tHfhXUmVz_3RfhTeIfTnJpRff0ayjt0WW1EEF-kfK_nQpRv5GOwO_LUsM33dI6E0m0htMgHDOY1UZLuOMbFnB9yqGWmj5k_lExnktB289eYZ8z7hmxGeoawLj-TjWY_k9jr22lwjtoDeKz0P7wLWY2qJ_8vrxmCecH2bT4NLkRjMBnS6_GXmLdxijqEvrvlcb8gl0Qt13LiZkJQLADMiViZxzN2hdbvauVH9gI7gLw",
+    "session": "dWltNEoxZXJuVy8wUGhua0pybTNaKzNZYkNiUnF4NDBVcGt5Zjg0QVBuTXFZbFR1eTFJNjlrVHlid2JBazk1NWoxZVVUenUyOWhLYVNVT3VIbk8ralltMWVYRDhXN016VkdFUHhiT1VuVWszRXBPazhDdVJ4VGFLTk0zcHkyS3BDTHhsK3pmdHNIT1VjS2k4WlU3ano3Y3pyQ0RlWVkrT0paaHV1RnpseHJzaE9QZ2QrMExsaTRYOWpRQUliWXFxOXBkQWFEVUUrem5IT1lJTnZ4VWwwRGxPMlhxdFBzWHcwaHR1bkFmR2N2RFBoUXI4Qlg0MXp2dXdOaHdnRjBsSWREbHFLWlo5aktqSTZDYWlFRXBXakxSTTZnRW9KUEltT3ZIcXdqR2l1MU12WHVmeGoxcVhBSzZGYm0zczJ6c2YtLWpPKzdKZE9hMDJGOWFkZEtrZFRCdVE9PQ%3D%3D--a306e0230f3a651402bd4d5ec7aef639c787554d",
+    "cf_clearance": "6kBBFpXFtm3oeuA5zQyPULwQxGi2JGValAPDCW9Utd0-1774049882-1.2.1.1-Cxof9bCNlbYIoLVgXvMmkG.YnMYPGXs_.1nJdQO2GLaw.v1zI537Y7.LNhzExftAOuMzMfyzCswRx4psaC_gQ7D6alNIawujn2__tM2TPZa4GcMje8_F4mO0ET9vp6ajMrY4.woT67IA23cYtEzakfXEu2I4r.DwxPAsLOu3cMFCBSxy653PWCMgnU1CpH1zKyb7IqfP2kj9Euok_PgEEkBoh3PkSCam42eHEctttgM",
+    "datadome": "VqF9XVeKa67BZpGskLTL_72z0DcknMlfM_NEYmFh8113iA202MgsQEjn12kL9R_2WKed5hz9PBG8WSVK9UcjmyZ5hBZ0ZYWkL_jr~d4cS14L_40nFAT~XXtZC5Mz7dRT",
 }
 
 POINTS_RELAIS = [
@@ -105,7 +103,7 @@ def marquer_article_vu(vinted_id, nom_alerte, titre, photo_url="", prix=""):
         logger.error(f"Erreur marquer_article_vu : {e}")
 
 # ============================================
-# SESSION VINTED (sans proxy)
+# SESSION VINTED
 # ============================================
 
 def creer_session():
@@ -125,10 +123,9 @@ def creer_session():
 def renouveler_token(session):
     logger.info("Renouvellement access_token...")
     try:
-        r = requests.post(
-            "https://www.vinted.fr/api/v2/tokens",
-            json={"grant_type": "refresh_token", "refresh_token": VINTED_TOKENS["refresh_token"], "client_id": "web"},
-            headers=CHROME_HEADERS,
+        r = session.post(
+            "https://www.vinted.fr/api/v2/auth/token/refresh",
+            json={"refresh_token": VINTED_TOKENS["refresh_token"]},
             timeout=15
         )
         if r.status_code == 200:
@@ -143,15 +140,15 @@ def renouveler_token(session):
             logger.info("Tokens renouveles avec succes")
             return True
         else:
-            logger.error(f"Echec renouvellement token : {r.status_code}")
-            envoyer_telegram("⚠️ Tokens Vinted expires — va sur vinted.fr dans Chrome, copie les cookies depuis DevTools -> Application -> Cookies et mets a jour le code.")
+            logger.error(f"Echec renouvellement token : {r.status_code} — {r.text[:200]}")
+            envoyer_telegram("⚠️ Tokens Vinted expires — va sur vinted.fr dans Chrome, copie les 5 cookies depuis DevTools -> Application -> Cookies et envoie-les moi.")
             return False
     except Exception as e:
         logger.error(f"Erreur renouvellement token : {e}")
         return False
 
 # ============================================
-# RECHERCHE (API directe, sans proxy)
+# RECHERCHE
 # ============================================
 
 def chercher_articles(session, params, nom_alerte):
@@ -172,8 +169,7 @@ def chercher_articles(session, params, nom_alerte):
             else:
                 return []
         if r.status_code == 200:
-            data = r.json()
-            return data.get("items", [])
+            return r.json().get("items", [])
         else:
             logger.warning(f"Erreur API Vinted [{nom_alerte}] : {r.status_code}")
             return []
@@ -353,7 +349,7 @@ def verifier_callbacks_telegram():
 
 def boucle_principale():
     init_db()
-    envoyer_telegram("🟢 Bot Vinted demarre (surveillance sans proxy)")
+    envoyer_telegram("🟢 Bot Vinted demarre")
     session = creer_session()
     compteur = 0
     erreurs_consecutives = 0
